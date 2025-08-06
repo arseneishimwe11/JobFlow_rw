@@ -54,7 +54,7 @@ export default function Header() {
                   <h1 className={`text-xl font-bold transition-colors ${
                     theme === 'dark' ? 'text-white' : 'text-gray-900'
                   }`}>
-                    Akazi
+                    Akazi Rwanda
                   </h1>
                   <p className={`text-xs font-medium ${
                     theme === 'dark' ? 'text-blue-300' : 'text-blue-600'
