@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Briefcase, Search, Bell, User, Settings, Home, Building, Heart, BarChart3, Menu, X, ChevronDown, Plus, Filter } from 'lucide-react';
+import { Moon, Sun, Briefcase, Bell, User, Settings, Home, Building, Heart, BarChart3, Menu, X, ChevronDown, Plus, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useTheme } from '../contexts/ThemeContext';
@@ -11,7 +10,6 @@ export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
@@ -27,50 +25,48 @@ export default function Header() {
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         theme === 'dark' 
           ? 'bg-gray-900/20 backdrop-blur-3xl border-b border-white/5' 
-          : 'bg-white/20 backdrop-blur-3xl border-b border-gray-200/20'
+          : 'bg-white/60 backdrop-blur-3xl border-b border-gray-200/30 shadow-sm'
       }`}>
         {/* Glassmorphism overlay */}
         <div className={`absolute inset-0 ${
           theme === 'dark' 
             ? 'bg-gradient-to-r from-gray-900/40 via-slate-900/30 to-gray-900/40' 
-            : 'bg-gradient-to-r from-white/40 via-blue-50/30 to-white/40'
+            : 'bg-gradient-to-r from-white/60 via-gray-50/40 to-white/60'
         }`} />
         
         {/* Main Header Content */}
-        <div className="relative container mx-auto px-6 max-w-7xl">
-          <div className="flex items-center h-20">
-            {/* Logo Section - Optimized */}
-            <div className="flex items-center space-x-4 mr-8">
-              <Link to="/" className="flex items-center space-x-3 group">
-                <div className={`relative p-2.5 rounded-2xl transition-all duration-300 group-hover:scale-110 ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 shadow-lg shadow-blue-500/25' 
-                    : 'bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 shadow-lg shadow-blue-500/25'
-                }`}>
-                  <Briefcase className="w-6 h-6 text-white" />
-                  <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <div className="hidden sm:block">
-                  <h1 className={`text-xl font-bold transition-colors ${
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    Akazi Rwanda
-                  </h1>
-                  <p className={`text-xs font-medium ${
-                    theme === 'dark' ? 'text-blue-300' : 'text-blue-600'
-                  }`}>
-                    Premium Job Platform
-                  </p>
-                </div>
-              </Link>
-            </div>
-
-            {/* Enhanced Navigation - Better Space Usage */}
-            <nav className="hidden lg:flex items-center space-x-1 mr-8">
-              <div className={`flex items-center p-1.5 rounded-2xl transition-all duration-300 ${
+        <div className="relative container mx-auto px-4 sm:px-6 max-w-7xl">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo Section - Premium & Compact */}
+            <Link to="/" className="flex items-center space-x-3 group flex-shrink-0">
+              <div className={`relative p-2 rounded-xl transition-all duration-300 group-hover:scale-110 ${
                 theme === 'dark' 
-                  ? 'bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10' 
-                  : 'bg-white/30 backdrop-blur-sm border border-white/20 hover:bg-white/50'
+                  ? 'bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 shadow-lg shadow-blue-500/20' 
+                  : 'bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 shadow-lg shadow-blue-500/20'
+              }`}>
+                <Briefcase className="w-5 h-5 text-white" />
+                <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <div className="hidden sm:block">
+                <h1 className={`text-lg font-bold transition-colors ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  Akazi Rwanda
+                </h1>
+                <p className={`text-xs font-medium leading-none ${
+                  theme === 'dark' ? 'text-blue-300' : 'text-blue-600'
+                }`}>
+                  Premium Job Platform
+                </p>
+              </div>
+            </Link>
+
+            {/* Enhanced Navigation - Centered */}
+            <nav className="hidden lg:flex items-center">
+              <div className={`flex items-center p-1 rounded-xl transition-all duration-300 ${
+                theme === 'dark' 
+                  ? 'bg-white/5 backdrop-blur-sm border border-white/10' 
+                  : 'bg-white/70 backdrop-blur-sm border border-gray-200/40 shadow-sm'
               }`}>
                 {navigation.map((item) => {
                   const isActive = location.pathname === item.href;
@@ -78,32 +74,27 @@ export default function Header() {
                     <Link
                       key={item.name}
                       to={item.href}
-                      className={`relative flex items-center space-x-2 px-4 py-2.5 rounded-xl transition-all duration-300 group ${
+                      className={`relative flex items-center space-x-2 px-3 py-2 mx-[2px] rounded-lg transition-all duration-300 group ${
                         isActive
                           ? theme === 'dark'
-                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30'
-                            : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30'
+                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md'
+                            : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md'
                           : theme === 'dark'
                             ? 'text-gray-300 hover:bg-white/10 hover:text-white'
-                            : 'text-gray-700 hover:bg-white/40 hover:text-gray-900'
+                            : 'text-gray-800 hover:bg-white/80 hover:text-gray-900'
                       }`}
                     >
-                      {/* Glow effect for active item */}
-                      {isActive && (
-                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/20 to-cyan-400/20 blur-sm" />
-                      )}
-                      
-                      <item.icon className={`w-4 h-4 transition-all duration-300 relative z-10 ${
+                      <item.icon className={`w-4 h-4 transition-all duration-300 ${
                         isActive ? 'text-white' : ''
                       } ${item.highlight && !isActive ? 'text-blue-500' : ''}`} />
-                      <span className="font-semibold text-sm relative z-10">{item.name}</span>
+                      <span className="font-medium text-sm">{item.name}</span>
                       {item.badge && (
-                        <Badge variant={isActive ? "secondary" : "outline"} className={`text-xs relative z-10 ${
+                        <Badge variant={isActive ? "secondary" : "outline"} className={`text-xs h-5 ${
                           isActive 
                             ? 'bg-white/20 text-white border-white/30' 
                             : theme === 'dark'
-                              ? 'border-blue-500 text-blue-300 bg-blue-900/30'
-                              : 'border-blue-400 text-blue-600 bg-blue-100/50'
+                              ? 'border-blue-500 text-blue-300 bg-blue-900/20'
+                              : 'border-blue-400 text-blue-600 bg-blue-100/60'
                         } ${item.highlight ? 'animate-pulse' : ''}`}>
                           {item.badge}
                         </Badge>
@@ -114,75 +105,33 @@ export default function Header() {
               </div>
             </nav>
 
-            {/* Premium Search Bar - Centered and Enhanced */}
-            <div className="hidden md:flex flex-1 max-w-xl mx-4">
-              <div className={`relative w-full group transition-all duration-300 ${
-                searchFocused ? 'scale-105' : ''
-              }`}>
-                <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20' 
-                    : 'bg-gradient-to-r from-white/60 to-white/40 backdrop-blur-xl border border-white/30'
-                } ${searchFocused ? 'shadow-2xl shadow-blue-500/20' : 'shadow-lg'}`} />
-                
-                <div className="relative flex items-center">
-                  <Search className={`absolute left-4 w-5 h-5 transition-all duration-300 ${
-                    theme === 'dark' 
-                      ? searchFocused ? 'text-blue-400' : 'text-gray-400'
-                      : searchFocused ? 'text-blue-600' : 'text-gray-500'
-                  }`} />
-                  <Input
-                    placeholder="Search jobs, companies, skills..."
-                    onFocus={() => setSearchFocused(true)}
-                    onBlur={() => setSearchFocused(false)}
-                    className={`pl-12 pr-12 h-12 border-0 rounded-2xl bg-transparent transition-all duration-300 ${
-                      theme === 'dark' 
-                        ? 'text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/50' 
-                        : 'text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/50'
-                    }`}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`absolute right-2 w-8 h-8 rounded-lg transition-all duration-300 ${
-                      theme === 'dark' 
-                        ? 'hover:bg-white/10 text-gray-400 hover:text-blue-400' 
-                        : 'hover:bg-gray-100 text-gray-500 hover:text-blue-600'
-                    }`}
-                  >
-                    <Filter className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Actions - Optimized Layout */}
-            <div className="flex items-center space-x-2">
+            {/* Right Actions - Optimized & Premium */}
+            <div className="flex items-center space-x-2 flex-shrink-0">
               {/* Post Job Button - Premium CTA */}
-              <Button className={`hidden lg:flex items-center space-x-2 px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 hover:scale-105 ${
+              <Button className={`hidden sm:flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 ${
                 theme === 'dark'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/25'
-                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/25'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/20'
+                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/20'
               }`}>
                 <Plus className="w-4 h-4" />
-                <span>Post Job</span>
+                <span className="hidden md:block">Post Job</span>
               </Button>
 
               {/* Notifications */}
               <Button
                 variant="ghost"
                 size="icon"
-                className={`relative w-10 h-10 rounded-xl transition-all duration-300 hover:scale-110 ${
+                className={`relative w-9 h-9 rounded-lg transition-all duration-300 hover:scale-110 ${
                   theme === 'dark' 
                     ? 'hover:bg-white/10 text-gray-300 hover:text-white' 
-                    : 'hover:bg-white/40 text-gray-700 hover:text-gray-900'
+                    : 'hover:bg-white/70 text-gray-800 hover:text-gray-900 shadow-sm'
                 }`}
               >
-                <Bell className="w-5 h-5" />
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                <Bell className="w-4 h-4" />
+                <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-xs font-bold">3</span>
                 </div>
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-400 rounded-full animate-ping opacity-75" />
+                <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-400 rounded-full animate-ping opacity-75" />
               </Button>
 
               {/* Theme Toggle */}
@@ -190,82 +139,72 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={toggleTheme}
-                className={`w-10 h-10 rounded-xl transition-all duration-500 hover:scale-110 hover:rotate-180 ${
+                className={`w-9 h-9 rounded-lg transition-all duration-500 hover:scale-110 hover:rotate-180 ${
                   theme === 'dark' 
                     ? 'hover:bg-white/10 text-gray-300 hover:text-white' 
-                    : 'hover:bg-white/40 text-gray-700 hover:text-gray-900'
+                    : 'hover:bg-white/70 text-gray-800 hover:text-gray-900 shadow-sm'
                 }`}
               >
                 {theme === 'dark' ? (
-                  <Sun className="w-5 h-5 transition-transform duration-500" />
+                  <Sun className="w-4 h-4 transition-transform duration-500" />
                 ) : (
-                  <Moon className="w-5 h-5 transition-transform duration-500" />
+                  <Moon className="w-4 h-4 transition-transform duration-500" />
                 )}
               </Button>
 
-              {/* Premium User Menu */}
+              {/* Profile Avatar - Icon Only */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-xl transition-all duration-300 hover:scale-105 ${
+                    size="icon"
+                    className={`relative w-9 h-9 rounded-lg transition-all duration-300 hover:scale-110 group ${
                       theme === 'dark' 
-                        ? 'hover:bg-white/10 text-gray-300' 
-                        : 'hover:bg-white/40 text-gray-700'
+                        ? 'hover:bg-white/10' 
+                        : 'hover:bg-white/70 shadow-sm'
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className={`relative w-9 h-9 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 ${
-                        theme === 'dark' 
-                          ? 'bg-gradient-to-br from-blue-500 to-cyan-600' 
-                          : 'bg-gradient-to-br from-blue-500 to-cyan-600'
-                      }`}>
-                        <User className="w-4 h-4 text-white" />
-                        <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      </div>
-                      <div className="hidden xl:block text-left">
-                        <div className="font-semibold text-sm">John Doe</div>
-                        <div className={`text-xs ${
-                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                        }`}>
-                          Software Engineer
-                        </div>
-                      </div>
-                      <ChevronDown className="w-4 h-4 transition-transform duration-200" />
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-md transition-all duration-300 ${
+                      theme === 'dark' 
+                        ? 'bg-gradient-to-br from-blue-500 to-cyan-600' 
+                        : 'bg-gradient-to-br from-blue-500 to-cyan-600'
+                    }`}>
+                      <User className="w-4 h-4 text-white" />
                     </div>
+                    <div className="absolute inset-0 rounded-lg bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={`w-72 mt-2 ${
+                <DropdownMenuContent align="end" className={`w-64 mt-2 ${
                   theme === 'dark' 
-                    ? 'bg-gray-900/95 border-gray-700/50 backdrop-blur-2xl' 
-                    : 'bg-white/95 border-gray-200/50 backdrop-blur-2xl'
-                } shadow-2xl rounded-2xl`}>
+                    ? 'bg-gray-900/95 border-gray-700/50 backdrop-blur-xl' 
+                    : 'bg-white/95 border-gray-200/50 backdrop-blur-xl'
+                } shadow-2xl rounded-xl`}>
                   {/* User Profile Header */}
                   <div className={`p-4 border-b ${
                     theme === 'dark' ? 'border-gray-700/50' : 'border-gray-200/50'
                   }`}>
                     <div className="flex items-center space-x-3">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                         theme === 'dark' 
                           ? 'bg-gradient-to-br from-blue-500 to-cyan-600' 
                           : 'bg-gradient-to-br from-blue-500 to-cyan-600'
                       }`}>
-                        <User className="w-6 h-6 text-white" />
+                        <User className="w-5 h-5 text-white" />
                       </div>
-                      <div className="flex-1">
-                        <div className={`font-semibold ${
+                      <div className="flex-1 min-w-0">
+                        <div className={`font-semibold truncate ${
                           theme === 'dark' ? 'text-white' : 'text-gray-900'
                         }`}>
                           John Doe
                         </div>
-                        <div className={`text-sm ${
+                        <div className={`text-sm truncate ${
                           theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                         }`}>
                           john.doe@example.com
                         </div>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Badge className="bg-green-100 text-green-700 text-xs">Pro Member</Badge>
-                          <Badge className="bg-blue-100 text-blue-700 text-xs">Verified</Badge>
+                        <div className="flex items-center space-x-1 mt-1">
+                          <Badge className="bg-green-100 text-green-700 text-xs h-5">Pro</Badge>
+                          <Badge className="bg-blue-100 text-blue-700 text-xs h-5">Verified</Badge>
                         </div>
                       </div>
                     </div>
@@ -274,29 +213,30 @@ export default function Header() {
                   {/* Menu Items */}
                   <div className="p-2">
                     <DropdownMenuItem asChild>
-                      <Link to="/profile" className="flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-105">
+                      <Link to="/profile" className="flex items-center space-x-3 p-2 rounded-lg transition-all duration-200">
                         <User className="w-4 h-4" />
-                        <span>Profile</span>
+                        <span>My Profile</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/saved" className="flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-105">
+                      <Link to="/saved" className="flex items-center space-x-3 p-2 rounded-lg transition-all duration-200">
                         <Heart className="w-4 h-4" />
                         <span>Saved Jobs</span>
-                        <Badge className="ml-auto bg-blue-100 text-blue-700 text-xs">12</Badge>
+                        <Badge className="ml-auto bg-blue-100 text-blue-700 text-xs h-5">12</Badge>
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-105">
+                    <DropdownMenuItem className="flex items-center space-x-3 p-2 rounded-lg transition-all duration-200">
                       <Settings className="w-4 h-4" />
                       <span>Settings</span>
                     </DropdownMenuItem>
                   </div>
 
-                  <DropdownMenuSeparator className="my-2" />
+                  <DropdownMenuSeparator className="my-1" />
                   
                   <div className="p-2">
-                    <DropdownMenuItem className="text-red-600 p-3 rounded-xl transition-all duration-200 hover:scale-105">
-                      Sign out
+                    <DropdownMenuItem className="flex items-center space-x-3 p-2 rounded-lg text-red-600 transition-all duration-200">
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign out</span>
                     </DropdownMenuItem>
                   </div>
                 </DropdownMenuContent>
@@ -307,16 +247,16 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className={`lg:hidden w-10 h-10 rounded-xl transition-all duration-300 ${
+                className={`lg:hidden w-9 h-9 rounded-lg transition-all duration-300 ${
                   theme === 'dark' 
                     ? 'hover:bg-white/10 text-gray-300' 
-                    : 'hover:bg-white/40 text-gray-700'
+                    : 'hover:bg-white/50 text-gray-700'
                 }`}
               >
                 {mobileMenuOpen ? (
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 ) : (
-                  <Menu className="w-5 h-5" />
+                  <Menu className="w-4 h-4" />
                 )}
               </Button>
             </div>
@@ -334,35 +274,14 @@ export default function Header() {
           />
           
           {/* Mobile Menu */}
-          <div className={`absolute top-20 left-4 right-4 rounded-3xl overflow-hidden transition-all duration-300 ${
+          <div className={`absolute top-16 left-4 right-4 rounded-2xl overflow-hidden transition-all duration-300 ${
             theme === 'dark' 
               ? 'bg-gray-900/95 border border-white/10' 
               : 'bg-white/95 border border-gray-200/20'
-          } backdrop-blur-2xl shadow-2xl`}>
-            <div className="p-6">
-              {/* Mobile Search */}
-              <div className="mb-6">
-                <div className={`relative ${
-                  theme === 'dark' 
-                    ? 'bg-white/10 border border-white/20' 
-                    : 'bg-gray-100 border border-gray-200'
-                } rounded-2xl`}>
-                  <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                  }`} />
-                  <Input
-                    placeholder="Search jobs, companies..."
-                    className={`pl-12 h-12 border-0 rounded-2xl bg-transparent ${
-                      theme === 'dark' 
-                        ? 'text-white placeholder:text-gray-400' 
-                        : 'text-gray-900 placeholder:text-gray-500'
-                    }`}
-                  />
-                </div>
-              </div>
-
+          } backdrop-blur-xl shadow-2xl`}>
+            <div className="p-4">
               {/* Mobile Navigation Links */}
-              <div className="space-y-2 mb-6">
+              <div className="space-y-1 mb-4">
                 {navigation.map((item) => {
                   const isActive = location.pathname === item.href;
                   return (
@@ -370,29 +289,29 @@ export default function Header() {
                       key={item.name}
                       to={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center justify-between px-4 py-4 rounded-2xl transition-all duration-300 ${
+                      className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${
                         isActive
                           ? theme === 'dark'
-                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/25'
-                            : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/25'
+                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md'
+                            : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md'
                           : theme === 'dark'
                             ? 'text-gray-300 hover:bg-white/10 hover:text-white'
-                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                            : 'text-gray-700 hover:bg-gray-100/60 hover:text-gray-900'
                       }`}
                     >
-                      <div className="flex items-center space-x-4">
-                        <item.icon className={`w-6 h-6 ${
+                      <div className="flex items-center space-x-3">
+                        <item.icon className={`w-5 h-5 ${
                           isActive ? 'text-white' : ''
                         }`} />
-                        <span className="font-semibold text-lg">{item.name}</span>
+                        <span className="font-medium text-base">{item.name}</span>
                       </div>
                       {item.badge && (
-                        <Badge variant={isActive ? "secondary" : "outline"} className={`${
+                        <Badge variant={isActive ? "secondary" : "outline"} className={`text-xs h-5 ${
                           isActive 
                             ? 'bg-white/20 text-white border-white/30' 
                             : theme === 'dark'
-                              ? 'border-blue-600 text-blue-300 bg-blue-900/30'
-                              : 'border-blue-400 text-blue-600 bg-blue-100/50'
+                              ? 'border-blue-600 text-blue-300 bg-blue-900/20'
+                              : 'border-blue-400 text-blue-600 bg-blue-100/60'
                         }`}>
                           {item.badge}
                         </Badge>
@@ -403,12 +322,12 @@ export default function Header() {
               </div>
 
               {/* Mobile CTA */}
-              <Button className={`w-full mb-4 h-12 rounded-2xl font-semibold ${
+              <Button className={`w-full mb-4 h-11 rounded-xl font-medium ${
                 theme === 'dark'
                   ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700'
                   : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
               } text-white shadow-lg`}>
-                <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-4 h-4 mr-2" />
                 Post a Job
               </Button>
 
@@ -416,21 +335,21 @@ export default function Header() {
               <div className={`pt-4 border-t ${
                 theme === 'dark' ? 'border-white/10' : 'border-gray-200'
               }`}>
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                     theme === 'dark' 
                       ? 'bg-gradient-to-br from-blue-500 to-cyan-600' 
                       : 'bg-gradient-to-br from-blue-500 to-cyan-600'
                   }`}>
-                    <User className="w-6 h-6 text-white" />
+                    <User className="w-5 h-5 text-white" />
                   </div>
-                  <div>
-                    <div className={`font-semibold ${
+                  <div className="flex-1 min-w-0">
+                    <div className={`font-medium truncate ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
                       John Doe
                     </div>
-                    <div className={`text-sm ${
+                    <div className={`text-sm truncate ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       Software Engineer
@@ -438,23 +357,26 @@ export default function Header() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   <Button
                     variant="outline"
-                    className={`rounded-xl ${
+                    size="sm"
+                    className={`rounded-lg ${
                       theme === 'dark' 
                         ? 'border-white/20 text-white hover:bg-white/10' 
                         : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
+                    <Settings className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Settings</span>
                   </Button>
                   <Button
                     variant="outline"
-                    className="rounded-xl text-red-600 border-red-300 hover:bg-red-50"
+                    size="sm"
+                    className="rounded-lg text-red-600 border-red-300 hover:bg-red-50"
                   >
-                    Sign out
+                    <LogOut className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Sign out</span>
                   </Button>
                 </div>
               </div>
@@ -464,7 +386,7 @@ export default function Header() {
       )}
 
       {/* Spacer for fixed header */}
-      <div className="h-20" />
+      <div className="h-16" />
     </>
   );
 }
