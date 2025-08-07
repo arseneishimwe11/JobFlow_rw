@@ -20,35 +20,37 @@ export default function Hero() {
   ];
 
   return (
-    <section className="relative py-20 overflow-hidden">
-      <div className="container mx-auto px-4 text-center max-w-6xl">
+    <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 text-center max-w-6xl">
         {/* Announcement Badge */}
-        <div className={`inline-flex items-center px-6 py-3 rounded-full text-sm font-medium mb-8 transition-all duration-300 hover:scale-105 ${
+        <div className={`inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium mb-6 sm:mb-8 transition-all duration-300 hover:scale-105 ${
           theme === 'dark' 
             ? 'bg-gradient-to-r from-blue-900/50 to-cyan-900/50 text-blue-300 border border-blue-500/30' 
             : 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border border-blue-200'
         } backdrop-blur-sm shadow-lg`}>
-          <Sparkles className="w-4 h-4 mr-2" />
-          New: AI-powered job matching now available!
-          <ArrowRight className="w-4 h-4 ml-2" />
+          <Sparkles className="w-3 sm:w-4 h-3 sm:h-4 mr-2" />
+          <span className="hidden xs:inline">New: AI-powered job matching now available!</span>
+          <span className="xs:hidden">AI job matching available!</span>
+          <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 ml-2" />
         </div>
 
         {/* Main Heading */}
-        <h1 className={`text-5xl md:text-7xl font-bold mb-8 leading-tight ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold rowdies-regular mb-6 sm:mb-8 leading-tight ${
+          theme === 'dark' ? 'text-white' : 'text-gray-800'
         }`}>
-          Discover Your
+          Discover your
           <span className={`block bg-gradient-to-r ${
             theme === 'dark' 
               ? 'from-blue-400 via-cyan-400 to-blue-500' 
               : 'from-blue-600 via-cyan-600 to-blue-700'
           } bg-clip-text text-transparent`}>
-            Dream Career
+            DREAM CAREER
           </span>
-          in Rwanda
+          <span className="hidden sm:inline">in Rwanda</span>
+          <span className="sm:hidden">in Rwanda</span>
         </h1>
 
-        <p className={`text-xl md:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed ${
+        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 lg:mb-12 max-w-3xl mx-auto roboto-slab-normal leading-relaxed ${
           theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
         }`}>
           Connect with Rwanda's top employers and discover opportunities that match your skills, 
@@ -56,21 +58,21 @@ export default function Hero() {
         </p>
 
         {/* Enhanced Search Bar */}
-        <div className={`max-w-2xl mx-auto mb-8 p-2 rounded-2xl backdrop-blur-xl border shadow-2xl ${
+        <div className={`max-w-2xl mx-auto mb-6 sm:mb-8 p-1.5 sm:p-2 rounded-xl sm:rounded-2xl backdrop-blur-xl border shadow-2xl ${
           theme === 'dark' 
             ? 'bg-white/10 border-white/20' 
             : 'bg-white/80 border-white/40'
         }`}>
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2">
             <div className="relative flex-1">
-              <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+              <Search className={`absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
               }`} />
               <Input
                 placeholder="Search for jobs, companies, or skills..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`pl-12 h-14 text-lg border-0 rounded-xl ${
+                className={`pl-10 sm:pl-12 h-12 sm:h-14 text-sm sm:text-lg border-0 rounded-lg sm:rounded-xl ${
                   theme === 'dark' 
                     ? 'bg-transparent text-white placeholder:text-gray-400' 
                     : 'bg-transparent text-gray-900 placeholder:text-gray-500'
@@ -79,30 +81,31 @@ export default function Hero() {
             </div>
             <Button 
               size="lg"
-              className={`h-14 px-8 rounded-xl font-semibold transition-all duration-300 hover:scale-105 ${
+              className={`h-12 sm:h-14 px-6 sm:px-8 rounded-lg sm:rounded-xl font-medium sm:font-semibold transition-all duration-300 hover:scale-105 ${
                 theme === 'dark'
                   ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
                   : 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
               } text-white shadow-lg hover:shadow-xl`}
             >
-              Search Jobs
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <span className="hidden sm:inline">Search Jobs</span>
+              <span className="sm:hidden">Search</span>
+              <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 ml-1 sm:ml-2" />
             </Button>
           </div>
         </div>
 
         {/* Trending Searches */}
-        <div className="mb-16">
-          <p className={`text-sm mb-4 ${
+        <div className="mb-10 sm:mb-12 lg:mb-16">
+          <p className={`text-xs sm:text-sm mb-3 sm:mb-4 ${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>
             Trending searches:
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
             {trendingSearches.map((search, index) => (
               <button
                 key={index}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 hover:scale-105 ${
                   theme === 'dark'
                     ? 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white border border-white/20'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 border border-gray-200'
@@ -115,29 +118,29 @@ export default function Hero() {
         </div>
 
         {/* Enhanced Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className={`p-6 rounded-2xl backdrop-blur-sm border transition-all duration-300 hover:scale-105 group ${
+              className={`p-4 sm:p-5 lg:p-6 rounded-xl lg:rounded-2xl backdrop-blur-sm border transition-all duration-300 hover:scale-105 group ${
                 theme === 'dark' 
                   ? 'bg-white/5 border-white/10 hover:bg-white/10' 
                   : 'bg-white/60 border-white/40 hover:bg-white/80'
               } shadow-lg hover:shadow-2xl`}
             >
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 transition-all duration-300 group-hover:scale-110 ${
+              <div className={`w-10 sm:w-11 lg:w-12 h-10 sm:h-11 lg:h-12 rounded-lg lg:rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-all duration-300 group-hover:scale-110 ${
                 theme === 'dark' 
                   ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
                   : 'bg-gradient-to-br from-blue-600 to-cyan-600'
               }`}>
-                <stat.icon className="w-6 h-6 text-white" />
+                <stat.icon className="w-5 sm:w-5.5 lg:w-6 h-5 sm:h-5.5 lg:h-6 text-white" />
               </div>
-              <div className={`text-3xl font-bold mb-1 ${
+              <div className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-1 ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}>
                 {stat.value}
               </div>
-              <div className={`text-sm mb-2 ${
+              <div className={`text-xs sm:text-sm mb-1 sm:mb-2 ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>
                 {stat.label}
