@@ -153,7 +153,7 @@ export default function Header() {
               </Button>
 
               {/* Profile Avatar - Icon Only */}
-              <DropdownMenu>
+              <DropdownMenu modal={true}>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
@@ -174,11 +174,11 @@ export default function Header() {
                     <div className="absolute inset-0 rounded-lg bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" sideOffset={8} className={`w-64 ${
+                <DropdownMenuContent align="end" sideOffset={16} className={`w-64 ${
                   theme === 'dark' 
                     ? 'bg-gray-900/95 border border-gray-700/50 backdrop-blur-xl' 
                     : 'bg-white/95 border border-gray-200/50 backdrop-blur-xl'
-                } shadow-2xl rounded-xl`}>
+                } shadow-2xl rounded-xl border`}>
                   {/* User Profile Header */}
                   <div className={`p-4 border-b ${
                     theme === 'dark' ? 'border-gray-700/50' : 'border-gray-200/50'
@@ -337,12 +337,12 @@ export default function Header() {
 
               {/* Mobile User Section */}
               <div className={`pt-4 border-t ${
-                theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                theme === 'dark' ? 'border-gray-700/50' : 'border-gray-200'
               }`}>
                 <div className="flex items-center space-x-3 mb-4">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                     theme === 'dark' 
-                      ? 'bg-gradient-to-br from-blue-500 to-cyan-600' 
+                      ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
                       : 'bg-gradient-to-br from-blue-500 to-cyan-600'
                   }`}>
                     <User className="w-5 h-5 text-white" />
@@ -367,7 +367,7 @@ export default function Header() {
                     size="sm"
                     className={`rounded-lg ${
                       theme === 'dark' 
-                        ? 'border-white/20 text-white hover:bg-white/10' 
+                        ? 'border-gray-700/50 text-gray-300 hover:text-white hover:bg-white/10' 
                         : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                     }`}
                   >
@@ -377,7 +377,11 @@ export default function Header() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-lg text-red-600 border-red-300 hover:bg-red-50"
+                    className={`rounded-lg ${
+                      theme === 'dark'
+                        ? 'text-red-400 hover:text-red-300 border-red-900/50 hover:bg-red-900/20'
+                        : 'text-red-600 border-red-300 hover:bg-red-50'
+                    }`}
                   >
                     <LogOut className="w-4 h-4 mr-1" />
                     <span className="text-xs">Sign out</span>
