@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, TrendingUp, Users, MapPin, Briefcase, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,25 @@ import { useTheme } from '../contexts/ThemeContext';
 export default function Hero() {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Typewriter effect states
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [currentText, setCurrentText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const typingSpeed = useRef(120); // Typing speed in ms
+  const deletingSpeed = useRef(60); // Deleting speed in ms
+  const pauseDuration = useRef(2000); // Pause duration in ms
+
+  const dynamicWords = [
+    'DREAM CAREER',
+    'PERFECT JOB',
+    'IDEAL POSITION',
+    'FUTURE ROLE',
+    'NEXT OPPORTUNITY',
+    'GROWTH PATH',
+    'SUCCESS STORY'
+  ];
 
   const stats = [
     { icon: Briefcase, label: 'Active Jobs', value: '1,247', change: '+12%' },
@@ -19,8 +38,75 @@ export default function Hero() {
     'Software Developer', 'Marketing Manager', 'Data Analyst', 'Project Manager', 'Sales Executive'
   ];
 
+  // Typewriter effect
+  useEffect(() => {
+    const currentWord = dynamicWords[currentWordIndex];
+    let timeout: NodeJS.Timeout;
+
+    if (isPaused) {
+      // Pause at the end of the word before deleting
+      timeout = setTimeout(() => {
+        setIsPaused(false);
+        setIsDeleting(true);
+      }, pauseDuration.current);
+    } else if (isDeleting) {
+      // Handle deletion of characters
+      if (currentText === '') {
+        // When fully deleted, move to the next word
+        setIsDeleting(false);
+        setCurrentWordIndex((prev) => (prev + 1) % dynamicWords.length);
+      } else {
+        // Delete one character at a time
+        timeout = setTimeout(() => {
+          setCurrentText(currentText.substring(0, currentText.length - 1));
+        }, deletingSpeed.current);
+      }
+    } else {
+      // Handle typing of characters
+      if (currentText === currentWord) {
+        // When word is fully typed, pause
+        setIsPaused(true);
+      } else {
+        // Type one character at a time
+        timeout = setTimeout(() => {
+          setCurrentText(currentWord.substring(0, currentText.length + 1));
+        }, typingSpeed.current);
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [currentText, isDeleting, isPaused, currentWordIndex, dynamicWords]);
+
   return (
     <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+          }
+          
+          .animate-blink {
+            animation: blink 1s infinite;
+          }
+          
+          .typewriter-text {
+            background: linear-gradient(to right, #2563eb, #06b6d4, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+          }
+          
+          .dark .typewriter-text {
+            background: linear-gradient(to right, #60a5fa, #22d3ee, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+          }
+        `
+      }} />
       <div className="container mx-auto px-4 sm:px-6 text-center max-w-6xl">
         {/* Announcement Badge */}
         <div className={`inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium mb-6 sm:mb-8 transition-all duration-300 hover:scale-105 ${
@@ -34,17 +120,27 @@ export default function Hero() {
           <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 ml-2" />
         </div>
 
-        {/* Main Heading */}
-        <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold rowdies-regular mb-6 sm:mb-8 leading-tight ${
+        {/* Main Heading with Typewriter Effect */}
+        <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 rowdies-regular leading-tight ${
           theme === 'dark' ? 'text-white' : 'text-gray-800'
         }`}>
           Discover your
-          <span className={`block bg-gradient-to-r ${
-            theme === 'dark' 
-              ? 'from-blue-400 via-cyan-400 to-blue-500' 
-              : 'from-blue-600 via-cyan-600 to-blue-700'
-          } bg-clip-text text-transparent`}>
-            DREAM CAREER
+          <span className="block relative">
+            <span className="relative inline-block">
+              <span className="typewriter-text">
+                {currentText}
+              </span>
+              <span 
+                className="inline-block animate-blink"
+                style={{
+                  color: theme === 'dark' ? '#60a5fa' : '#2563eb',
+                  fontWeight: 'bold',
+                  marginLeft: '2px',
+                  position: 'relative',
+                  top: '-5px'
+                }}
+              >|</span>
+            </span>
           </span>
           <span className="hidden sm:inline">in Rwanda</span>
           <span className="sm:hidden">in Rwanda</span>
