@@ -3,6 +3,7 @@ import { Search, TrendingUp, Users, MapPin, Briefcase, ArrowRight, Sparkles } fr
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTheme } from '../contexts/ThemeContext';
+import jobOffersSvg from '@/assets/job_offers.svg';
 
 export default function Hero() {
   const { theme } = useTheme();
@@ -78,7 +79,17 @@ export default function Hero() {
   }, [currentText, isDeleting, isPaused, currentWordIndex, dynamicWords]);
 
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">
+    <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden">      
+      {/* SVG Background Element - Positioned for visual appeal */}
+      <div className="absolute right-0 left-[-25px] top-1/2 transform -translate-y-1/2 w-1/2 h-full opacity-20 pointer-events-none hidden lg:block">
+        <img 
+          src={jobOffersSvg} 
+          alt="Job offers illustration" 
+          className="w-full h-full object-contain animate-float"
+        />
+      </div>
+      
+
       <style dangerouslySetInnerHTML={{
         __html: `
           @keyframes blink {
@@ -86,8 +97,18 @@ export default function Hero() {
             51%, 100% { opacity: 0; }
           }
           
+          @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+          }
+          
           .animate-blink {
             animation: blink 1s infinite;
+          }
+          
+          .animate-float {
+            animation: float 6s ease-in-out infinite;
           }
           
           .typewriter-text {
@@ -107,7 +128,15 @@ export default function Hero() {
           }
         `
       }} />
-      <div className="container mx-auto px-4 sm:px-6 text-center max-w-6xl">
+      <div className="container mx-auto px-4 sm:px-6 text-center max-w-6xl relative z-10">
+        {/* Mobile SVG Element - Shown only on smaller screens */}
+        <div className="mx-auto w-full max-w-xs mb-8 lg:hidden">
+          <img 
+            src={jobOffersSvg} 
+            alt="Job offers illustration" 
+            className={`w-full h-auto object-contain transition-all duration-500 hover:scale-105 animate-float ${theme === 'dark' ? 'opacity-70' : 'opacity-90'}`}
+          />
+        </div>
         {/* Announcement Badge */}
         <div className={`inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium mb-6 sm:mb-8 transition-all duration-300 hover:scale-105 ${
           theme === 'dark' 
@@ -115,8 +144,8 @@ export default function Hero() {
             : 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border border-blue-200'
         } backdrop-blur-sm shadow-lg`}>
           <Sparkles className="w-3 sm:w-4 h-3 sm:h-4 mr-2" />
-          <span className="hidden xs:inline">New: AI-powered job matching now available!</span>
-          <span className="xs:hidden">AI job matching available!</span>
+          <span className="hidden xs:inline">New: Smart job recommendations available!</span>
+          <span className="xs:hidden">Smart job matching!</span>
           <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 ml-2" />
         </div>
 
