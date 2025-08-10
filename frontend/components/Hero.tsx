@@ -129,14 +129,6 @@ export default function Hero() {
         `
       }} />
       <div className="container mx-auto px-4 sm:px-6 text-center max-w-6xl relative z-10">
-        {/* Mobile SVG Element - Shown only on smaller screens */}
-        <div className="mx-auto w-full max-w-xs mb-8 lg:hidden">
-          <img 
-            src={jobOffersSvg} 
-            alt="Job offers illustration" 
-            className={`w-full h-auto object-contain transition-all duration-500 hover:scale-105 animate-float ${theme === 'dark' ? 'opacity-70' : 'opacity-90'}`}
-          />
-        </div>
         {/* Announcement Badge */}
         <div className={`inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium mb-6 sm:mb-8 transition-all duration-300 hover:scale-105 ${
           theme === 'dark' 
@@ -175,12 +167,23 @@ export default function Hero() {
           <span className="sm:hidden">in Rwanda</span>
         </h1>
 
-        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 lg:mb-12 max-w-3xl mx-auto roboto-slab-normal leading-relaxed ${
+        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 lg:mb-10 max-w-3xl mx-auto roboto-slab-normal leading-relaxed ${
           theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
         }`}>
           Connect with Rwanda's top employers and discover opportunities that match your skills, 
           ambitions, and career goals with our intelligent job platform.
         </p>
+
+        {/* Mobile SVG Element - Better positioned after description */}
+        <div className="mx-auto w-full max-w-sm mb-8 sm:mb-10 lg:hidden">
+          <img 
+            src={jobOffersSvg} 
+            alt="Job offers illustration" 
+            className={`w-full h-auto object-contain transition-all duration-500 hover:scale-105 animate-float ${
+              theme === 'dark' ? 'opacity-60' : 'opacity-80'
+            }`}
+          />
+        </div>
 
         {/* Enhanced Search Bar */}
         <div className={`max-w-2xl mx-auto mb-6 sm:mb-8 p-1.5 sm:p-2 rounded-xl sm:rounded-2xl backdrop-blur-xl border shadow-2xl ${
