@@ -167,26 +167,26 @@ export default function Hero() {
           <span className="sm:hidden">in Rwanda</span>
         </h1>
 
-        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 lg:mb-10 max-w-3xl mx-auto roboto-slab-normal leading-relaxed ${
+        {/* Mobile SVG Element - Positioned as background element */}
+        <div className="absolute inset-x-0 top-32 mx-auto w-full max-w-lg opacity-30 pointer-events-none lg:hidden z-0">
+          <img 
+            src={jobOffersSvg} 
+            alt="Job offers illustration" 
+            className={`w-full h-auto object-contain animate-float ${
+              theme === 'dark' ? 'opacity-40' : 'opacity-50'
+            }`}
+          />
+        </div>
+
+        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 lg:mb-10 max-w-3xl mx-auto roboto-slab-normal leading-relaxed relative z-10 ${
           theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
         }`}>
           Connect with Rwanda's top employers and discover opportunities that match your skills, 
           ambitions, and career goals with our intelligent job platform.
         </p>
 
-        {/* Mobile SVG Element - Better positioned after description */}
-        <div className="mx-auto w-full max-w-sm mb-8 sm:mb-10 lg:hidden">
-          <img 
-            src={jobOffersSvg} 
-            alt="Job offers illustration" 
-            className={`w-full h-auto object-contain transition-all duration-500 hover:scale-105 animate-float ${
-              theme === 'dark' ? 'opacity-60' : 'opacity-80'
-            }`}
-          />
-        </div>
-
         {/* Enhanced Search Bar */}
-        <div className={`max-w-2xl mx-auto mb-6 sm:mb-8 p-1.5 sm:p-2 rounded-xl sm:rounded-2xl backdrop-blur-xl border shadow-2xl ${
+        <div className={`max-w-2xl mx-auto mb-6 sm:mb-8 p-1.5 sm:p-2 rounded-xl sm:rounded-2xl backdrop-blur-xl border shadow-2xl relative z-10 ${
           theme === 'dark' 
             ? 'bg-white/10 border-white/20' 
             : 'bg-white/80 border-white/40'
