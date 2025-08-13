@@ -1,6 +1,7 @@
 import { api } from "encore.dev/api";
 import { jobsDB } from "./db";
 import type { ScrapingLog } from "./types";
+import { JobScraperManager } from "../scrapers";
 
 interface ScrapeJobsParams {
   source?: string;
@@ -16,12 +17,10 @@ export const scrape = api<ScrapeJobsParams, ScrapeJobsResponse>(
   { expose: true, method: "POST", path: "/jobs/scrape" },
   async (params) => {
     const sources = params.source ? [params.source] : [
-      "rwandajob.com",
-      "kora.rw",
       "jobwebrwanda.com",
-      "newtimes.co.rw",
-      "jobinrwanda.com",
-      "jobboardfinder.com",
+      "jobinrwanda.com", 
+      "kora.rw",
+      "bag.work",
       "ndangira.net",
       "greatrwandajobs.com"
     ];
@@ -45,15 +44,21 @@ export const scrape = api<ScrapeJobsParams, ScrapeJobsResponse>(
               jobs_updated = ${result.updated},
               status = 'completed',
               completed_at = CURRENT_TIMESTAMP
-          WHERE id = ${logId.id}
+          WHERE id = ${logId?.id}
         `;
 
         const log = await jobsDB.queryRow`
-          SELECT * FROM scraping_logs WHERE id = ${logId.id}
+          SELECT * FROM scraping_logs WHERE id = ${logId?.id}
         `;
         
         logs.push({
-          ...log,
+          id: log.id,
+          source_name: log.source_name,
+          jobs_found: log.jobs_found,
+          jobs_added: log.jobs_added,
+          jobs_updated: log.jobs_updated,
+          status: log.status,
+          error_message: log.error_message,
           started_at: new Date(log.started_at),
           completed_at: log.completed_at ? new Date(log.completed_at) : undefined,
         });
@@ -87,76 +92,119 @@ export const scrape = api<ScrapeJobsParams, ScrapeJobsResponse>(
 );
 
 async function scrapeJobsFromSource(source: string): Promise<{found: number, added: number, updated: number}> {
-  // Mock scraping implementation - in a real app, this would use Puppeteer/Playwright
-  // to scrape actual job sites
+  console.log(`Starting scraping for source: ${source}`);
   
-  const mockJobs = [
-    {
-      title: `Software Developer - ${source}`,
-      company: `Tech Company ${source}`,
-      location: "Kigali, Rwanda",
-      description: "We are looking for a talented software developer...",
-      requirements: "Bachelor's degree in Computer Science, 3+ years experience",
-      salary_range: "500,000 - 800,000 RWF",
-      job_type: "Full-time",
-      category: "Technology",
-      source_url: `https://${source}/job-1`,
-      source_name: source,
-      posted_date: new Date(),
-    },
-    {
-      title: `Marketing Manager - ${source}`,
-      company: `Marketing Agency ${source}`,
-      location: "Kigali, Rwanda",
-      description: "Seeking an experienced marketing manager...",
-      requirements: "Bachelor's degree in Marketing, 5+ years experience",
-      salary_range: "600,000 - 1,000,000 RWF",
-      job_type: "Full-time",
-      category: "Marketing",
-      source_url: `https://${source}/job-2`,
-      source_name: source,
-      posted_date: new Date(),
+  try {
+    // Use the new scraper system
+    const scrapedJobs = await JobScraperManager.scrapeFromSources([source]);
+    
+    let added = 0;
+    let updated = 0;
+
+    for (const job of scrapedJobs) {
+      try {
+        // Check if job already exists based on source_url
+        const existing = await jobsDB.queryRow`
+          SELECT id FROM jobs WHERE source_url = ${job.url}
+        `;
+
+        // Parse deadline if available
+        let deadlineDate: Date | null = null;
+        if (job.deadline) {
+          try {
+            deadlineDate = new Date(job.deadline);
+            if (isNaN(deadlineDate.getTime())) {
+              deadlineDate = null;
+            }
+          } catch (error) {
+            deadlineDate = null;
+          }
+        }
+
+        // Determine job category based on title
+        const category = determineJobCategory(job.title);
+        
+        // Determine job type (default to Full-time)
+        const jobType = determineJobType(job.title, job.snippet);
+
+        if (existing) {
+          // Update existing job
+          await jobsDB.exec`
+            UPDATE jobs 
+            SET title = ${job.title},
+                company = ${job.company},
+                location = ${job.location || 'Rwanda'},
+                description = ${job.snippet || ''},
+                requirements = ${job.snippet || ''},
+                job_type = ${jobType},
+                category = ${category},
+                posted_date = ${deadlineDate},
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${existing.id}
+          `;
+          updated++;
+        } else {
+          // Insert new job
+          await jobsDB.exec`
+            INSERT INTO jobs (
+              title, company, location, description, requirements,
+              job_type, category, source_url, source_name, posted_date
+            ) VALUES (
+              ${job.title}, ${job.company}, ${job.location || 'Rwanda'}, 
+              ${job.snippet || ''}, ${job.snippet || ''}, ${jobType}, 
+              ${category}, ${job.url}, ${job.source}, ${deadlineDate}
+            )
+          `;
+          added++;
+        }
+      } catch (error) {
+        console.error(`Error processing job "${job.title}":`, error);
+      }
     }
-  ];
 
-  let added = 0;
-  let updated = 0;
+    console.log(`Scraping completed for ${source}: ${scrapedJobs.length} found, ${added} added, ${updated} updated`);
+    return { found: scrapedJobs.length, added, updated };
 
-  for (const job of mockJobs) {
-    const existing = await jobsDB.queryRow`
-      SELECT id FROM jobs WHERE source_url = ${job.source_url}
-    `;
-
-    if (existing) {
-      await jobsDB.exec`
-        UPDATE jobs 
-        SET title = ${job.title},
-            company = ${job.company},
-            location = ${job.location},
-            description = ${job.description},
-            requirements = ${job.requirements},
-            salary_range = ${job.salary_range},
-            job_type = ${job.job_type},
-            category = ${job.category},
-            posted_date = ${job.posted_date},
-            updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${existing.id}
-      `;
-      updated++;
-    } else {
-      await jobsDB.exec`
-        INSERT INTO jobs (
-          title, company, location, description, requirements,
-          salary_range, job_type, category, source_url, source_name, posted_date
-        ) VALUES (
-          ${job.title}, ${job.company}, ${job.location}, ${job.description},
-          ${job.requirements}, ${job.salary_range}, ${job.job_type}, ${job.category},
-          ${job.source_url}, ${job.source_name}, ${job.posted_date}
-        )
-      `;
-      added++;
-    }
+  } catch (error) {
+    console.error(`Error scraping ${source}:`, error);
+    throw error;
   }
+}
 
-  return { found: mockJobs.length, added, updated };
+function determineJobCategory(title: string): string {
+  const titleLower = title.toLowerCase();
+  
+  if (titleLower.includes('software') || titleLower.includes('developer') || titleLower.includes('programmer') || titleLower.includes('it ') || titleLower.includes('tech')) {
+    return 'Technology';
+  } else if (titleLower.includes('marketing') || titleLower.includes('sales') || titleLower.includes('communication')) {
+    return 'Marketing';
+  } else if (titleLower.includes('finance') || titleLower.includes('accounting') || titleLower.includes('audit')) {
+    return 'Finance';
+  } else if (titleLower.includes('hr') || titleLower.includes('human resource') || titleLower.includes('recruitment')) {
+    return 'Human Resources';
+  } else if (titleLower.includes('health') || titleLower.includes('medical') || titleLower.includes('doctor') || titleLower.includes('nurse')) {
+    return 'Healthcare';
+  } else if (titleLower.includes('engineer') || titleLower.includes('construction') || titleLower.includes('civil')) {
+    return 'Engineering';
+  } else if (titleLower.includes('teacher') || titleLower.includes('education') || titleLower.includes('academic')) {
+    return 'Education';
+  } else if (titleLower.includes('manager') || titleLower.includes('director') || titleLower.includes('admin')) {
+    return 'Management';
+  } else {
+    return 'Other';
+  }
+}
+
+function determineJobType(title: string, snippet?: string): string {
+  const text = `${title} ${snippet || ''}`.toLowerCase();
+  
+  if (text.includes('intern') || text.includes('internship')) {
+    return 'Internship';
+  } else if (text.includes('part-time') || text.includes('part time')) {
+    return 'Part-time';
+  } else if (text.includes('contract') || text.includes('temporary') || text.includes('freelance')) {
+    return 'Contract';
+  } else {
+    return 'Full-time';
+  }
 }
