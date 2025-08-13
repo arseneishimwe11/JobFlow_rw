@@ -77,7 +77,13 @@ export const scrape = api<ScrapeJobsParams, ScrapeJobsResponse>(
         `;
         
         logs.push({
-          ...log,
+          id: log.id,
+          source_name: log.source_name,
+          jobs_found: log.jobs_found,
+          jobs_added: log.jobs_added,
+          jobs_updated: log.jobs_updated,
+          status: log.status,
+          error_message: log.error_message,
           started_at: new Date(log.started_at),
           completed_at: log.completed_at ? new Date(log.completed_at) : undefined,
         });
