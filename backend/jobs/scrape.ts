@@ -60,16 +60,16 @@ export const scrape = api<ScrapeJobsParams, ScrapeJobsResponse>(
           status: log?.status,
           error_message: log?.error_message,
           started_at: new Date(log?.started_at),
-          completed_at: log.completed_at ? new Date(log.completed_at) : undefined,
+          completed_at: log?.completed_at ? new Date(log.completed_at) : undefined,
         });
 
       } catch (error) {
         await jobsDB.exec`
           UPDATE scraping_logs 
           SET status = 'failed',
-              error_message = ${error.message},
+              error_message = ${error instanceof Error ? error.message : 'Unknown error'},
               completed_at = CURRENT_TIMESTAMP
-          WHERE id = ${logId.id}
+          WHERE id = ${logId?.id}
         `;
 
         const log = await jobsDB.queryRow`
