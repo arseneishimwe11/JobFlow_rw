@@ -73,7 +73,7 @@ export const scrape = api<ScrapeJobsParams, ScrapeJobsResponse>(
         `;
 
         const log = await jobsDB.queryRow`
-          SELECT * FROM scraping_logs WHERE id = ${logId.id}
+          SELECT * FROM scraping_logs WHERE id = ${logId?.id}
         `;
         
         logs.push({
@@ -85,7 +85,7 @@ export const scrape = api<ScrapeJobsParams, ScrapeJobsResponse>(
           status: log?.status,
           error_message: log?.error_message,
           started_at: new Date(log?.started_at),
-          completed_at: log.completed_at ? new Date(log.completed_at) : undefined,
+          completed_at: log?.completed_at ? new Date(log.completed_at) : undefined,
         });
       }
     }
