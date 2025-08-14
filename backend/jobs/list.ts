@@ -85,14 +85,14 @@ export const list = api<ListJobsParams, JobsResponse>(
       jobs: jobs.map(job => ({
         ...job,
         posted_date: job.posted_date ? new Date(job.posted_date) : undefined,
-        scraped_at: new Date(job.scraped_at),
-        created_at: new Date(job.created_at),
-        updated_at: new Date(job.updated_at),
+        scraped_at: job.scraped_at ? new Date(job.scraped_at) : undefined,
+        created_at: job.created_at ? new Date(job.created_at) : undefined,
+        updated_at: job.updated_at ? new Date(job.updated_at) : undefined,
       })),
       total,
       page,
       limit,
       total_pages: Math.ceil(total / limit),
-    };
+    } as JobsResponse;
   }
 );
