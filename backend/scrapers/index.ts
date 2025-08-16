@@ -18,7 +18,7 @@ export class JobScraperManager {
       name: 'jobwebrwanda.com',
       scraper: JobwebRwandaScraper.scrape
     },
-    // Jobin Rwanda
+    // jobinrwanda.com
     {
       name: 'jobinrwanda.com',
       scraper: JobinRwandaScraper.scrape
