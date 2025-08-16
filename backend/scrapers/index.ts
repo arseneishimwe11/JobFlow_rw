@@ -13,14 +13,17 @@ export interface ScraperModule {
 
 export class JobScraperManager {
   private static readonly scrapers: ScraperModule[] = [
+    // Jobweb Rwanda
     {
       name: 'jobwebrwanda.com',
       scraper: JobwebRwandaScraper.scrape
     },
+    // Jobin Rwanda
     {
       name: 'jobinrwanda.com',
       scraper: JobinRwandaScraper.scrape
     },
+    // Kora Rwanda
     {
       name: 'kora.rw',
       scraper: KoraScraper.scrape
