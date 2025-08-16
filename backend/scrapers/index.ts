@@ -23,7 +23,6 @@ export class JobScraperManager {
       name: 'jobinrwanda.com',
       scraper: JobinRwandaScraper.scrape
     },
-    // Kora Rwanda
     {
       name: 'kora.rw',
       scraper: KoraScraper.scrape
