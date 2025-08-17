@@ -18,12 +18,16 @@ export const create = api<CreateJobRequest, Job>(
       RETURNING *
     `;
 
+    if (!job) {
+      throw new Error("Failed to create job");
+    }
+
     return {
       ...job,
       posted_date: job.posted_date ? new Date(job.posted_date) : undefined,
       scraped_at: new Date(job.scraped_at),
       created_at: new Date(job.created_at),
       updated_at: new Date(job.updated_at),
-    };
+    } as Job;
   }
 );
