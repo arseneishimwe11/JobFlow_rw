@@ -69,10 +69,20 @@ export const listCompanies = api<ListCompaniesParams, CompaniesResponse>(
 
     return {
       companies: companies.map(company => ({
-        ...company,
+        id: company.id,
+        name: company.name,
+        description: company.description,
+        website: company.website,
+        logo_url: company.logo_url,
+        industry: company.industry,
+        size: company.size,
+        location: company.location,
+        founded_year: company.founded_year,
         benefits: company.benefits || [],
         culture_tags: company.culture_tags || [],
         rating: company.rating ? parseFloat(company.rating) : undefined,
+        total_jobs: company.total_jobs,
+        is_verified: company.is_verified,
         created_at: new Date(company.created_at),
         updated_at: new Date(company.updated_at),
       })),
@@ -108,10 +118,20 @@ export const getCompany = api<GetCompanyParams, Company & { jobs: any[] }>(
     `;
 
     return {
-      ...company,
+      id: company.id,
+      name: company.name,
+      description: company.description,
+      website: company.website,
+      logo_url: company.logo_url,
+      industry: company.industry,
+      size: company.size,
+      location: company.location,
+      founded_year: company.founded_year,
       benefits: company.benefits || [],
       culture_tags: company.culture_tags || [],
       rating: company.rating ? parseFloat(company.rating) : undefined,
+      total_jobs: company.total_jobs,
+      is_verified: company.is_verified,
       created_at: new Date(company.created_at),
       updated_at: new Date(company.updated_at),
       jobs: jobs.map(job => ({
