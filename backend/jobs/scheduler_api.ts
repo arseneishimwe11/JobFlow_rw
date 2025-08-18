@@ -4,7 +4,6 @@ import { JobScheduler } from "./scheduler";
 interface SchedulerStatusResponse {
   isScheduled: boolean;
   isRunning: boolean;
-  nextRun?: string;
 }
 
 interface SchedulerActionResponse {
@@ -19,8 +18,7 @@ export const getSchedulerStatus = api<{}, SchedulerStatusResponse>(
     const status = JobScheduler.getStatus();
     return {
       isScheduled: status.isScheduled,
-      isRunning: status.isRunning,
-      nextRun: status.nextRun?.toISOString()
+      isRunning: status.isRunning
     };
   }
 );
@@ -31,13 +29,12 @@ export const startScheduler = api<{}, SchedulerActionResponse>(
   async () => {
     JobScheduler.start();
     const status = JobScheduler.getStatus();
-    
+
     return {
       message: "Job scheduler started successfully",
       status: {
         isScheduled: status.isScheduled,
-        isRunning: status.isRunning,
-        nextRun: status.nextRun?.toISOString()
+        isRunning: status.isRunning
       }
     };
   }
@@ -49,13 +46,12 @@ export const stopScheduler = api<{}, SchedulerActionResponse>(
   async () => {
     JobScheduler.stop();
     const status = JobScheduler.getStatus();
-    
+
     return {
       message: "Job scheduler stopped successfully",
       status: {
         isScheduled: status.isScheduled,
-        isRunning: status.isRunning,
-        nextRun: status.nextRun?.toISOString()
+        isRunning: status.isRunning
       }
     };
   }
@@ -75,13 +71,12 @@ export const runManualScraping = api<{}, SchedulerActionResponse>(
     });
 
     const status = JobScheduler.getStatus();
-    
+
     return {
       message: "Manual scraping started successfully",
       status: {
         isScheduled: status.isScheduled,
-        isRunning: status.isRunning,
-        nextRun: status.nextRun?.toISOString()
+        isRunning: status.isRunning
       }
     };
   }
