@@ -78,11 +78,10 @@ export class JobScheduler {
   /**
    * Get scheduler status
    */
-  static getStatus(): { isScheduled: boolean, isRunning: boolean, nextRun?: Date } {
+  static getStatus(): { isScheduled: boolean, isRunning: boolean } {
     return {
       isScheduled: this.scheduledTask !== null,
-      isRunning: this.isRunning,
-      nextRun: this.scheduledTask ? new Date(this.scheduledTask.nextDates().toISOString()) : undefined
+      isRunning: this.isRunning
     };
   }
 
