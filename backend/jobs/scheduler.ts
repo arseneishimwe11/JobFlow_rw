@@ -33,7 +33,6 @@ export class JobScheduler {
         this.isRunning = false;
       }
     }, {
-      scheduled: true,
       timezone: "Africa/Kigali"
     });
 
