@@ -82,7 +82,7 @@ export class JobScheduler {
     return {
       isScheduled: this.scheduledTask !== null,
       isRunning: this.isRunning,
-      nextRun: this.scheduledTask ? new Date(this.scheduledTask.nextDate().toISOString()) : undefined
+      nextRun: this.scheduledTask ? new Date(this.scheduledTask.nextDates().toISOString()) : undefined
     };
   }
 
