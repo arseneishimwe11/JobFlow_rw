@@ -187,15 +187,17 @@ export class JobScheduler {
         }
 
         // Update scraping log with success
-        await jobsDB.exec`
-          UPDATE scraping_logs 
-          SET jobs_found = ${scrapedJobs.length}, 
-              jobs_added = ${added},
-              jobs_updated = ${updated},
-              status = 'completed',
-              completed_at = CURRENT_TIMESTAMP
-          WHERE id = ${logId.id}
-        `;
+        if (logId) {
+          await jobsDB.exec`
+            UPDATE scraping_logs
+            SET jobs_found = ${scrapedJobs.length},
+                jobs_added = ${added},
+                jobs_updated = ${updated},
+                status = 'completed',
+                completed_at = CURRENT_TIMESTAMP
+            WHERE id = ${logId.id}
+          `;
+        }
 
         results[source] = { found: scrapedJobs.length, added, updated };
         totalFound += scrapedJobs.length;
@@ -210,13 +212,15 @@ export class JobScheduler {
         console.error(`✗ ${source}: ${errorMessage}`);
 
         // Update scraping log with error
-        await jobsDB.exec`
-          UPDATE scraping_logs 
-          SET status = 'failed',
-              error_message = ${errorMessage},
-              completed_at = CURRENT_TIMESTAMP
-          WHERE id = ${logId.id}
-        `;
+        if (logId) {
+          await jobsDB.exec`
+            UPDATE scraping_logs
+            SET status = 'failed',
+                error_message = ${errorMessage},
+                completed_at = CURRENT_TIMESTAMP
+            WHERE id = ${logId.id}
+          `;
+        }
 
         results[source] = { found: 0, added: 0, updated: 0, error: errorMessage };
       }
