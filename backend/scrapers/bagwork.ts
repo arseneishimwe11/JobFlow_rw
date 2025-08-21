@@ -2,6 +2,7 @@ import { Browser, Page } from 'puppeteer';
 import { JobPost } from './types.js';
 import { ScraperUtils } from './utils.js';
 
+// bag.work scraper
 export class BagWorkScraper {
   private static readonly BASE_URL = 'https://app.bag.work/';
   private static readonly JOB_BOARD_URL = 'https://app.bag.work/job-board';
