@@ -9,6 +9,7 @@ export class GreatRwandaJobsScraper {
   private static readonly TIMEOUT = 30000;
   private static readonly RETRIES = 3;
 
+  // Scrape jobs from greatrwandajobs.com
   static async scrape(): Promise<JobPost[]> {
     let browser: Browser | null = null;
     
