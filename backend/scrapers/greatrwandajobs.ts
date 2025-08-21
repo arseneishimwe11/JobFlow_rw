@@ -30,6 +30,7 @@ export class GreatRwandaJobsScraper {
       while (currentPage <= maxPages) {
         console.log(`Scraping page ${currentPage}...`);
         
+        // Extract jobs from current page
         const pageJobs = await this.extractJobsFromPage(page);
         jobs.push(...pageJobs);
         
