@@ -14,7 +14,7 @@ export class BagWorkScraper {
     let browser: Browser | null = null;
     
     try {
-      //
+      // Create browser and page
       browser = await ScraperUtils.createBrowser();
       const page = await ScraperUtils.createPage(browser, this.TIMEOUT);
       
