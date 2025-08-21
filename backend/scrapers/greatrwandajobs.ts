@@ -2,6 +2,7 @@ import { Browser, Page } from 'puppeteer';
 import { JobPost } from './types.js';
 import { ScraperUtils } from './utils.js';
 
+// greatrwandajobs.com scraper
 export class GreatRwandaJobsScraper {
   private static readonly BASE_URL = 'https://www.greatrwandajobs.com/';
   private static readonly JOBS_URL = 'https://www.greatrwandajobs.com/jobs/';
