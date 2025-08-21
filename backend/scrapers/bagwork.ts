@@ -9,10 +9,12 @@ export class BagWorkScraper {
   private static readonly TIMEOUT = 30000;
   private static readonly RETRIES = 3;
 
+  // Scrape jobs from bag.work
   static async scrape(): Promise<JobPost[]> {
     let browser: Browser | null = null;
     
     try {
+      //
       browser = await ScraperUtils.createBrowser();
       const page = await ScraperUtils.createPage(browser, this.TIMEOUT);
       
