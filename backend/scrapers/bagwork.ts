@@ -62,6 +62,7 @@ export class BagWorkScraper {
         console.warn('Error loading additional content:', error);
       }
 
+      // Successful scrape
       console.log(`Scraped ${jobs.length} jobs from bag.work`);
       return jobs;
 
