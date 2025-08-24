@@ -198,7 +198,7 @@ export class JobScheduler {
           `;
         }
 
-        // Results for the scraped
+        // Results for the scraped jobs
         results[source] = { found: scrapedJobs.length, added, updated };
         totalFound += scrapedJobs.length;
         totalAdded += added;
