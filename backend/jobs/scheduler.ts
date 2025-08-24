@@ -198,6 +198,7 @@ export class JobScheduler {
           `;
         }
 
+        // Results
         results[source] = { found: scrapedJobs.length, added, updated };
         totalFound += scrapedJobs.length;
         totalAdded += added;
