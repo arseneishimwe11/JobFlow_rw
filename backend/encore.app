@@ -1,1 +1,0 @@
-{"id": "rwanda-job-platform-etc2", "lang": "typescript"}

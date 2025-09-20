@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String
+  password   String
+  role       Role     @default(USER)
+  avatar     String?
+  isVerified Boolean  @default(false)
+  isPro      Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  savedJobs SavedJob[]
+
+  @@map("users")
+}
+
+model Job {
+  id           Int       @id @default(autoincrement())
+  title        String
+  company      String
+  location     String
+  description  String    @db.Text
+  requirements String?   @db.Text
+  salaryRange  String?   @map("salary_range")
+  jobType      String    @map("job_type")
+  category     String
+  deadline     DateTime?
+  source       String    @default("Manual")
+  url          String?
+  postedDate   DateTime? @map("posted_date")
+  isActive     Boolean   @default(true)
+  isFeatured   Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  company_rel Company? @relation(fields: [companyId], references: [id])
+  companyId   Int?     @map("company_id")
+  savedBy     SavedJob[]
+
+  @@map("jobs")
+}
+
+model Company {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?  @db.Text
+  logo        String?
+  website     String?
+  location    String?
+  industry    String?
+  size        String?
+  founded     Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  jobs Job[]
+
+  @@map("companies")
+}
+
+model SavedJob {
+  id     Int @id @default(autoincrement())
+  userId Int @map("user_id")
+  jobId  Int @map("job_id")
+
+  savedAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@map("saved_jobs")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
