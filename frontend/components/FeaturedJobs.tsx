@@ -5,14 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTheme } from '../contexts/ThemeContext';
-import backend from '~backend/client';
+import { apiClient } from '../lib/apiClient';
+import type { JobsListResponse } from '../lib/apiClient';
 
 export default function FeaturedJobs() {
   const { theme } = useTheme();
 
   const { data: jobs, isLoading } = useQuery({
     queryKey: ['featured-jobs'],
-    queryFn: () => backend.jobs.list({ limit: 6, page: 1 }),
+    queryFn: () => apiClient.jobs.list({ limit: 6, page: 1, featured: true }),
   });
 
   const formatDate = (date: Date | string) => {
@@ -87,7 +88,7 @@ export default function FeaturedJobs() {
             </Card>
           ))
         ) : (
-          jobs?.jobs.slice(0, 6).map((job) => (
+          jobs?.jobs?.slice(0, 6).map((job: any) => (
             <Card key={job.id} className={`group hover:scale-105 transition-all duration-300 cursor-pointer ${
               theme === 'dark' 
                 ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20' 

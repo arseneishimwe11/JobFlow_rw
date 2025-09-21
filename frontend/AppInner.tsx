@@ -1,14 +1,44 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import JobsPage from './pages/JobsPage';
 import CompaniesPage from './pages/CompaniesPage';
 import SavedJobsPage from './pages/SavedJobsPage';
 import ProfilePage from './pages/ProfilePage';
-import AnalyticsPage from './pages/AnalyticsPage';
+import Login from './pages/Login';
+import AdminDashboard from './pages/AdminDashboard';
 import Footer from './components/Footer';
 import { useTheme } from './contexts/ThemeContext';
+import { useAuth } from './contexts/AuthContext';
+
+// Protected Route Component
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  const location = window.location;
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  
+  return <>{children}</>;
+}
+
+// Admin Route Component
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isAdmin } = useAuth();
+  const location = window.location;
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return <>{children}</>;
+}
 
 export default function AppInner() {
   const { theme } = useTheme();
@@ -47,11 +77,24 @@ export default function AppInner() {
           <main className="relative z-10">
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/jobs" element={<JobsPage />} />
               <Route path="/companies" element={<CompaniesPage />} />
-              <Route path="/saved" element={<SavedJobsPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/saved" element={
+                <ProtectedRoute>
+                  <SavedJobsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
             </Routes>
           </main>
           

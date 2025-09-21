@@ -7,7 +7,7 @@ import JobCardSkeleton from './JobCardSkeleton';
 import Pagination from './Pagination';
 import { useJobFilters } from '../hooks/useJobFilters';
 import { useTheme } from '../contexts/ThemeContext';
-import backend from '~backend/client';
+import { jobApi } from '../lib/api';
 
 export default function JobGrid() {
   const { theme } = useTheme();
@@ -27,7 +27,7 @@ export default function JobGrid() {
       params.append('page', page.toString());
       params.append('limit', '12');
 
-      return backend.jobs.list({
+      return jobApi.list({
         search: filters.search,
         location: filters.location,
         category: filters.category,

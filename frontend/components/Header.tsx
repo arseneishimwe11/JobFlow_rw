@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Briefcase, Bell, User, Settings, Home, Building, Heart, BarChart3, Menu, X, ChevronDown, Plus, LogOut } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Moon, Sun, Briefcase, Bell, User, Settings, Home, Building, Heart, Menu, X, ChevronDown, Plus, LogOut, Shield, UserCog } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import AdminJobForm from './admin/AdminJobForm';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [adminFormOpen, setAdminFormOpen] = useState(false);
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Jobs', href: '/jobs', icon: Briefcase, badge: '1.2k', highlight: true },
     { name: 'Companies', href: '/companies', icon: Building, badge: '300+' },
     { name: 'Saved', href: '/saved', icon: Heart, badge: '12' },
-    { name: 'Analytics', href: '/analytics', icon: BarChart3, badge: 'New' },
+    // { name: 'Analytics', href: '/analytics', icon: BarChart3, badge: 'New' }, // Commented out for now
   ];
 
   return (
@@ -107,15 +112,21 @@ export default function Header() {
 
             {/* Right Actions - Optimized & Premium */}
             <div className="flex items-center space-x-2 flex-shrink-0">
-              {/* Post Job Button - Premium CTA */}
-              <Button className={`hidden sm:flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 ${
-                theme === 'dark'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/20'
-                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/20'
-              }`}>
-                <Plus className="w-4 h-4" />
-                <span className="hidden md:block md:relative md: right-[7px]">Post Job</span>
-              </Button>
+              {/* Hidden Admin Access - Double click to reveal */}
+              {isAdmin && (
+                <Button 
+                  onClick={() => setAdminFormOpen(true)}
+                  className={`hidden sm:flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 ${
+                    theme === 'dark'
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/20'
+                      : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/20'
+                  }`}>
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden md:block">Post Job</span>
+                </Button>
+              )}
+              
+              {/* Hidden Admin Login - Triple click on logo to reveal */}
 
               {/* Notifications */}
               <Button
@@ -128,18 +139,29 @@ export default function Header() {
                 }`}
               >
                 <Bell className="w-4 h-4" />
-                <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-400 rounded-full flex items-center justify-center">
                   <span className="text-white text-xs font-bold">3</span>
                 </div>
                 <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-400 rounded-full animate-ping opacity-75" />
               </Button>
+
+              {/* Admin Post Job Button */}
+              {isAdmin && (
+                <Button
+                  onClick={() => setAdminFormOpen(true)}
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Post Job
+                </Button>
+              )}
 
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleTheme}
-                className={`w-9 h-9 rounded-lg transition-all duration-500 hover:scale-110 hover:rotate-180 ${
+                className={`w-9 h-9 rounded-lg transition-all duration-300 ${
                   theme === 'dark' 
                     ? 'hover:bg-white/10 text-gray-300 hover:text-white' 
                     : 'hover:bg-white/70 text-gray-800 hover:text-gray-900 shadow-sm'
@@ -152,99 +174,132 @@ export default function Header() {
                 )}
               </Button>
 
-              {/* Profile Avatar - Icon Only */}
-              <DropdownMenu modal={true}>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`relative w-9 h-9 rounded-lg transition-all duration-300 hover:scale-110 group ${
+              {/* User Profile & Actions */}
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      className={`relative p-2 rounded-xl transition-all duration-300 hover:scale-105 ${
+                        theme === 'dark' 
+                          ? 'hover:bg-white/10 text-white' 
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          theme === 'dark' 
+                            ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
+                            : 'bg-gradient-to-br from-blue-500 to-cyan-600'
+                        }`}>
+                          <User className="w-4 h-4 text-white" />
+                        </div>
+                        <ChevronDown className="w-4 h-4" />
+                      </div>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className={`w-80 p-0 ${
                       theme === 'dark' 
-                        ? 'hover:bg-white/10 text-gray-300 hover:text-white' 
-                        : 'hover:bg-white/70 text-gray-800 hover:text-gray-900 shadow-sm'
+                        ? 'bg-gray-900/95 border-gray-700/50 backdrop-blur-xl' 
+                        : 'bg-white/95 border-gray-200/50 backdrop-blur-xl'
                     }`}
                   >
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-md transition-all duration-300 ${
-                      theme === 'dark' 
-                        ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
-                        : 'bg-gradient-to-br from-blue-500 to-cyan-600'
-                    }`}>
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="absolute inset-0 rounded-lg bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" sideOffset={16} className={`w-64 ${
-                  theme === 'dark' 
-                    ? 'bg-gray-900/95 border border-gray-700/50 backdrop-blur-xl' 
-                    : 'bg-white/95 border border-gray-200/50 backdrop-blur-xl'
-                } shadow-2xl rounded-xl border`}>
-                  {/* User Profile Header */}
-                  <div className={`p-4 border-b ${
-                    theme === 'dark' ? 'border-gray-700/50' : 'border-gray-200/50'
-                  }`}>
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        theme === 'dark' 
-                          ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
-                          : 'bg-gradient-to-br from-blue-500 to-cyan-600'
-                      }`}>
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className={`font-semibold truncate ${
-                          theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    {/* User Info Header */}
+                    <div className={`p-4 border-b ${theme === 'dark' ? 'border-gray-700/50' : 'border-gray-200'}`}>
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                          theme === 'dark' 
+                            ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
+                            : 'bg-gradient-to-br from-blue-500 to-cyan-600'
                         }`}>
-                          John Doe
+                          <User className="w-5 h-5 text-white" />
                         </div>
-                        <div className={`text-sm truncate ${
-                          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                          john.doe@example.com
-                        </div>
-                        <div className="flex items-center space-x-1 mt-1">
-                          <Badge className={`text-xs h-5 ${
-                            theme === 'dark' ? 'bg-green-900/40 text-green-400 border border-green-700/50' : 'bg-green-100 text-green-700'
-                          }`}>Pro</Badge>
-                          <Badge className={`text-xs h-5 ${
-                            theme === 'dark' ? 'bg-blue-900/40 text-blue-400 border border-blue-700/50' : 'bg-blue-100 text-blue-700'
-                          }`}>Verified</Badge>
+                        <div className="flex-1 min-w-0">
+                          <div className={`font-semibold truncate ${
+                            theme === 'dark' ? 'text-white' : 'text-gray-900'
+                          }`}>
+                            {user?.name || 'Guest User'}
+                          </div>
+                          <div className={`text-sm truncate ${
+                            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
+                            {user?.email || 'Not signed in'}
+                          </div>
+                          <div className="flex items-center space-x-1 mt-1">
+                            {user?.isPro && (
+                              <Badge className={`text-xs h-5 ${
+                                theme === 'dark' ? 'bg-green-900/40 text-green-400 border border-green-700/50' : 'bg-green-100 text-green-700'
+                              }`}>Pro</Badge>
+                            )}
+                            {user?.isVerified && (
+                              <Badge className={`text-xs h-5 ${
+                                theme === 'dark' ? 'bg-blue-900/40 text-blue-400 border border-blue-700/50' : 'bg-blue-100 text-blue-700'
+                              }`}>Verified</Badge>
+                            )}
+                            {isAdmin && (
+                              <Badge className={`text-xs h-5 ${
+                                theme === 'dark' ? 'bg-purple-900/40 text-purple-400 border border-purple-700/50' : 'bg-purple-100 text-purple-700'
+                              }`}>Admin</Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Menu Items */}
-                  <div className="p-2">
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile" className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 ${theme === 'dark' ? 'text-gray-300 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}>
-                        <User className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
-                        <span>My Profile</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/saved" className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 ${theme === 'dark' ? 'text-gray-300 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}>
-                        <Heart className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
-                        <span>Saved Jobs</span>
-                        <Badge className={`ml-auto text-xs h-5 ${theme === 'dark' ? 'bg-blue-900/40 text-blue-400 border border-blue-700/50' : 'bg-blue-100 text-blue-700'}`}>12</Badge>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 ${theme === 'dark' ? 'text-gray-300 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}>
-                      <Settings className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <span>Settings</span>
-                    </DropdownMenuItem>
-                  </div>
+                    {/* Menu Items */}
+                    <div className="p-2">
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile" className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 ${theme === 'dark' ? 'text-gray-300 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}>
+                          <User className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                          <span>My Profile</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/saved" className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 ${theme === 'dark' ? 'text-gray-300 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}>
+                          <Heart className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                          <span>Saved Jobs</span>
+                          <Badge className={`ml-auto text-xs h-5 ${theme === 'dark' ? 'bg-blue-900/40 text-blue-400 border border-blue-700/50' : 'bg-blue-100 text-blue-700'}`}>12</Badge>
+                        </Link>
+                      </DropdownMenuItem>
+                      {isAdmin && (
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin" className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 ${theme === 'dark' ? 'text-purple-300 hover:text-purple-200 hover:bg-purple-900/20' : 'text-purple-700 hover:text-purple-800 hover:bg-purple-50'}`}>
+                            <UserCog className={`w-4 h-4 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-500'}`} />
+                            <span>Admin Dashboard</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 ${theme === 'dark' ? 'text-gray-300 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}>
+                        <Settings className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                        <span>Settings</span>
+                      </DropdownMenuItem>
+                    </div>
 
-                  <DropdownMenuSeparator className={`my-1 ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-200'}`} />
-                  
-                  <div className="p-2">
-                    <DropdownMenuItem className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 ${theme === 'dark' ? 'text-red-400 hover:text-red-300 hover:bg-red-900/20' : 'text-red-600 hover:bg-red-50'}`}>
-                      <LogOut className="w-4 h-4" />
-                      <span>Sign out</span>
-                    </DropdownMenuItem>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <DropdownMenuSeparator className={`my-1 ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-200'}`} />
+                    
+                    <div className="p-2">
+                      <DropdownMenuItem 
+                        onClick={logout}
+                        className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 cursor-pointer ${theme === 'dark' ? 'text-red-400 hover:text-red-300 hover:bg-red-900/20' : 'text-red-600 hover:bg-red-50'}`}
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Sign out</span>
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                /* Login Button */
+                <Button
+                  onClick={() => navigate('/login')}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Sign In
+                </Button>
+              )}
 
               {/* Mobile Menu Button */}
               <Button
@@ -395,6 +450,12 @@ export default function Header() {
 
       {/* Spacer for fixed header */}
       <div className="h-16" />
+      
+      {/* Admin Job Form Modal */}
+      <AdminJobForm 
+        open={adminFormOpen}
+        onOpenChange={setAdminFormOpen}
+      />
     </>
   );
 }
