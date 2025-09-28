@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Moon, Sun, Briefcase, Home, Building, Heart, Menu, X, Shield, GraduationCap } from 'lucide-react';
+import { Moon, Sun, Briefcase, Home, Building, Heart, Menu, X, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from '../contexts/ThemeContext';
@@ -16,7 +16,6 @@ export default function Header() {
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Jobs', href: '/jobs', icon: Briefcase, badge: '1.2k', highlight: true },
-    { name: 'Internships', href: '/internships', icon: GraduationCap, badge: '50+' },
     { name: 'Companies', href: '/companies', icon: Building, badge: '300+' },
     { name: 'Saved', href: '/saved', icon: Heart, badge: '12' },
     // Admin link removed from public navigation
@@ -40,7 +39,7 @@ export default function Header() {
         {/* Main Header Content */}
         <div className="relative container mx-auto px-4 sm:px-6 max-w-7xl">
           <div className="flex items-center justify-between h-16">
-            {/* Logo Section - Premium & Compact */}
+            {/* Logo Section */}
             <Link to="/" className="flex items-center space-x-3 group flex-shrink-0">
               <div className={`relative p-2 rounded-xl transition-all duration-300 group-hover:scale-110 ${
                 theme === 'dark' 
@@ -64,7 +63,7 @@ export default function Header() {
               </div>
             </Link>
 
-            {/* Enhanced Navigation - Centered */}
+            {/* Navigation */}
             <nav className="hidden lg:flex items-center">
               <div className={`flex items-center p-1 rounded-xl transition-all duration-300 ${
                 theme === 'dark' 
@@ -214,70 +213,6 @@ export default function Header() {
                     </Link>
                   );
                 })}
-              </div>
-
-              {/* Mobile CTA */}
-              <Button className={`w-full mb-4 h-11 rounded-xl font-medium ${
-                theme === 'dark'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700'
-                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
-              } text-white shadow-lg`}>
-                <Plus className="w-4 h-4 mr-2" />
-                Post a Job
-              </Button>
-
-              {/* Mobile User Section */}
-              <div className={`pt-4 border-t ${
-                theme === 'dark' ? 'border-gray-700/50' : 'border-gray-200'
-              }`}>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    theme === 'dark' 
-                      ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
-                      : 'bg-gradient-to-br from-blue-500 to-cyan-600'
-                  }`}>
-                    <User className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className={`font-medium truncate ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      John Doe
-                    </div>
-                    <div className={`text-sm truncate ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      Software Engineer
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={`rounded-lg ${
-                      theme === 'dark' 
-                        ? 'border-gray-700/50 text-gray-300 hover:text-white hover:bg-white/10' 
-                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Settings className="w-4 h-4 mr-1" />
-                    <span className="text-xs">Settings</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={`rounded-lg ${
-                      theme === 'dark'
-                        ? 'text-red-400 hover:text-red-300 border-red-900/50 hover:bg-red-900/20'
-                        : 'text-red-600 border-red-300 hover:bg-red-50'
-                    }`}
-                  >
-                    <LogOut className="w-4 h-4 mr-1" />
-                    <span className="text-xs">Sign out</span>
-                  </Button>
-                </div>
               </div>
             </div>
           </div>

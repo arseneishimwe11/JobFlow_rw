@@ -10,10 +10,13 @@ import { Alert, AlertDescription } from '../ui/alert';
 import { Loader2, Save, X, AlertCircle } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { jobApi } from '../../lib/api';
+import type { Job } from '../../lib/apiClient';
 
 interface AdminJobFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  job?: Job | null;
+  onSuccess?: () => void;
 }
 
 interface JobFormData {
@@ -30,10 +33,10 @@ interface JobFormData {
   url: string;
 }
 
-export default function AdminJobForm({ open, onOpenChange }: AdminJobFormProps) {
+export default function AdminJobForm({ open, onOpenChange, job, onSuccess }: AdminJobFormProps) {
   const { theme } = useTheme();
-  // Simple toast alternative - we'll use alerts instead
   const queryClient = useQueryClient();
+  const isEditing = !!job;
 
   const [formData, setFormData] = useState<JobFormData>({
     title: '',
@@ -53,13 +56,49 @@ export default function AdminJobForm({ open, onOpenChange }: AdminJobFormProps) 
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Populate form when editing
+  React.useEffect(() => {
+    if (job) {
+      setFormData({
+        title: job.title || '',
+        company: job.company || '',
+        location: job.location || '',
+        description: job.description || '',
+        requirements: job.requirements || '',
+        salary_range: job.salaryRange || '',
+        job_type: job.jobType || '',
+        category: job.category || '',
+        deadline: job.deadline ? new Date(job.deadline).toISOString().split('T')[0] : '',
+        source: job.source || 'Manual',
+        url: job.url || '',
+      });
+    } else {
+      setFormData({
+        title: '',
+        company: '',
+        location: '',
+        description: '',
+        requirements: '',
+        salary_range: '',
+        job_type: '',
+        category: '',
+        deadline: '',
+        source: 'Manual',
+        url: '',
+      });
+    }
+  }, [job]);
+
   const createJobMutation = useMutation({
-    mutationFn: (jobData: JobFormData) => jobApi.create(jobData),
+    mutationFn: (jobData: JobFormData) => 
+      isEditing ? jobApi.update(job.id, jobData) : jobApi.create(jobData),
     onSuccess: () => {
-      setSuccessMessage('Job posted successfully!');
+      setSuccessMessage(isEditing ? 'Job updated successfully!' : 'Job posted successfully!');
       setErrorMessage('');
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       queryClient.invalidateQueries({ queryKey: ['featured-jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-recent-jobs'] });
+      onSuccess?.();
       setTimeout(() => {
         onOpenChange(false);
         resetForm();
@@ -67,7 +106,7 @@ export default function AdminJobForm({ open, onOpenChange }: AdminJobFormProps) 
       }, 2000);
     },
     onError: (error) => {
-      setErrorMessage(error instanceof Error ? error.message : 'Failed to post job');
+      setErrorMessage(error instanceof Error ? error.message : `Failed to ${isEditing ? 'update' : 'post'} job`);
       setSuccessMessage('');
     },
   });
@@ -142,7 +181,7 @@ export default function AdminJobForm({ open, onOpenChange }: AdminJobFormProps) 
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
             <Save className="w-5 h-5" />
-            <span>Post New Job</span>
+            <span>{isEditing ? 'Edit Job' : 'Post New Job'}</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -397,7 +436,7 @@ export default function AdminJobForm({ open, onOpenChange }: AdminJobFormProps) 
               } text-white font-medium`}
             >
               {createJobMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              {createJobMutation.isPending ? 'Posting...' : 'Post Job'}
+              {createJobMutation.isPending ? (isEditing ? 'Updating...' : 'Posting...') : (isEditing ? 'Update Job' : 'Post Job')}
             </Button>
           </div>
         </form>

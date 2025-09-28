@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import JobsPage from './pages/JobsPage';
+import InternshipsPage from './pages/InternshipsPage';
 import CompaniesPage from './pages/CompaniesPage';
 import SavedJobsPage from './pages/SavedJobsPage';
 import ProfilePage from './pages/ProfilePage';
@@ -79,12 +80,9 @@ export default function AppInner() {
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/jobs" element={<JobsPage />} />
+              <Route path="/internships" element={<InternshipsPage />} />
               <Route path="/companies" element={<CompaniesPage />} />
-              <Route path="/saved" element={
-                <ProtectedRoute>
-                  <SavedJobsPage />
-                </ProtectedRoute>
-              } />
+              <Route path="/saved" element={<SavedJobsPage />} />
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <ProfilePage />

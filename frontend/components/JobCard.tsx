@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from '../contexts/ThemeContext';
 import JobModal from './JobModal';
-import type { Job } from '~backend/jobs/types';
+import type { Job } from '../lib/apiClient';
 
 interface JobCardProps {
   job: Job;
@@ -102,7 +102,7 @@ export default function JobCard({ job }: JobCardProps) {
             <span className={`text-sm ${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
             }`}>
-              {formatDate(job.posted_date || job.created_at)}
+              {formatDate(job.postedDate || job.createdAt)}
             </span>
           </div>
         </div>
@@ -127,22 +127,22 @@ export default function JobCard({ job }: JobCardProps) {
               {job.category}
             </Badge>
           )}
-          {job.job_type && (
+          {job.jobType && (
             <Badge variant="outline" className={`${
               theme === 'dark' 
                 ? 'border-gray-600 text-gray-300' 
                 : 'border-gray-300 text-gray-600'
             }`}>
-              {job.job_type}
+              {job.jobType}
             </Badge>
           )}
-          {job.salary_range && (
+          {job.salaryRange && (
             <Badge variant="outline" className={`${
               theme === 'dark' 
                 ? 'border-green-600 text-green-300' 
                 : 'border-green-300 text-green-600'
             }`}>
-              {job.salary_range}
+              {job.salaryRange}
             </Badge>
           )}
         </div>
@@ -152,7 +152,7 @@ export default function JobCard({ job }: JobCardProps) {
           <span className={`text-xs ${
             theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
           }`}>
-            via {job.source_name}
+            via {job.source}
           </span>
           
           <Button

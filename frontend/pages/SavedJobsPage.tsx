@@ -1,15 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, Trash2, ExternalLink, Calendar, MapPin, Building } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from '../contexts/ThemeContext';
+import { apiClient } from '../lib/apiClient';
+import type { Job } from '../lib/apiClient';
 
 export default function SavedJobsPage() {
   const { theme } = useTheme();
+  const [savedJobs, setSavedJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock saved jobs data
-  const savedJobs = [
+  // Load saved job IDs from localStorage
+  useEffect(() => {
+    const loadSavedJobs = async () => {
+      try {
+        // Get saved job IDs from localStorage
+        const savedJobIds = JSON.parse(localStorage.getItem('savedJobIds') || '[]');
+        
+        if (savedJobIds.length === 0) {
+          setSavedJobs([]);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch all jobs and filter by saved IDs
+        const response = await apiClient.jobs.list({ limit: 100, page: 1 });
+        const jobs = response.jobs.filter((job: Job) => 
+          savedJobIds.includes(job.id)
+        );
+        
+        setSavedJobs(jobs);
+      } catch (error) {
+        console.error('Error loading saved jobs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSavedJobs();
+  }, []);
+
+  // Remove job from saved list
+  const removeSavedJob = (jobId: number) => {
+    const savedJobIds = JSON.parse(localStorage.getItem('savedJobIds') || '[]');
+    const newSavedIds = savedJobIds.filter((id: number) => id !== jobId);
+    localStorage.setItem('savedJobIds', JSON.stringify(newSavedIds));
+    setSavedJobs(savedJobs.filter(job => job.id !== jobId));
+  };
+
+  // Mock saved jobs data for fallback
+  const mockSavedJobs = [
     {
       id: 1,
       title: 'Senior Software Engineer',
@@ -144,27 +186,38 @@ export default function SavedJobsPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <Badge variant="outline" className={`${
+                  <Badge variant="outline" className={`text-xs ${
                     theme === 'dark' 
-                      ? 'border-blue-600 text-blue-300' 
-                      : 'border-blue-300 text-blue-600'
+                      ? 'border-blue-600 text-blue-300 bg-blue-900/20' 
+                      : 'border-blue-400 text-blue-600 bg-blue-100/60'
                   }`}>
-                    {job.category}
+                    {job.job_type || 'Full-time'}
                   </Badge>
-                  <Badge variant="outline" className={`${
+                  <Badge variant="outline" className={`text-xs ${
                     theme === 'dark' 
-                      ? 'border-gray-600 text-gray-300' 
-                      : 'border-gray-300 text-gray-600'
+                      ? 'border-gray-600 text-gray-300 bg-gray-900/20' 
+                      : 'border-gray-400 text-gray-600 bg-gray-100/60'
                   }`}>
-                    {job.type}
+                    {job.category || 'Technology'}
                   </Badge>
-                  <Badge variant="outline" className={`${
-                    theme === 'dark' 
-                      ? 'border-green-600 text-green-300' 
-                      : 'border-green-300 text-green-600'
+                </div>
+
+                <div className="flex items-center justify-between mb-4">
+                  <span className={`text-sm font-medium ${
+                    theme === 'dark' ? 'text-green-400' : 'text-green-600'
                   }`}>
-                    {job.salary}
-                  </Badge>
+                    {job.salary_range || 'Competitive salary'}
+                  </span>
+                  <div className="flex items-center space-x-1">
+                    <Calendar className={`w-4 h-4 ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    }`} />
+                    <span className={`text-sm ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
+                      Saved recently
+                    </span>
+                  </div>
                 </div>
 
                 {job.notes && (

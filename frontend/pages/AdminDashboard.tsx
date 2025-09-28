@@ -23,12 +23,13 @@ import {
   DollarSign
 } from 'lucide-react';
 import { apiClient } from '../lib/apiClient';
-import type { DashboardStatsResponse, JobsListResponse } from '../lib/apiClient';
+import type { DashboardStatsResponse, JobsListResponse, Job } from '../lib/apiClient';
 
 export default function AdminDashboard() {
   const { user, isAdmin } = useAuth();
   const { theme } = useTheme();
   const [showJobForm, setShowJobForm] = useState(false);
+  const [editingJob, setEditingJob] = useState<Job | null>(null);
 
   // Redirect if not admin
   if (!isAdmin) {
@@ -40,10 +41,35 @@ export default function AdminDashboard() {
     queryFn: () => apiClient.stats.getDashboard(),
   });
 
-  const { data: recentJobs, isLoading: jobsLoading } = useQuery({
+  const { data: recentJobs, isLoading: jobsLoading, refetch: refetchJobs } = useQuery({
     queryKey: ['admin-recent-jobs'],
     queryFn: () => apiClient.jobs.list({ limit: 10, page: 1 }),
   });
+
+  const handleEditJob = (job: Job) => {
+    setEditingJob(job);
+    setShowJobForm(true);
+  };
+
+  const handleDeleteJob = async (jobId: number) => {
+    if (window.confirm('Are you sure you want to delete this job?')) {
+      try {
+        await apiClient.jobs.delete(jobId);
+        refetchJobs();
+      } catch (error) {
+        console.error('Error deleting job:', error);
+      }
+    }
+  };
+
+  const handleJobFormClose = () => {
+    setShowJobForm(false);
+    setEditingJob(null);
+  };
+
+  const handleJobFormSuccess = () => {
+    refetchJobs();
+  };
 
   const statsCards = [
     {
@@ -231,13 +257,26 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => window.open(`/jobs/${job.id}`, '_blank')}
+                            >
                               <Eye className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleEditJob(job)}
+                            >
                               <Edit className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-red-600 hover:text-red-700"
+                              onClick={() => handleDeleteJob(job.id)}
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -305,7 +344,9 @@ export default function AdminDashboard() {
       {/* Job Form Modal */}
       <AdminJobForm 
         open={showJobForm} 
-        onOpenChange={setShowJobForm} 
+        onOpenChange={handleJobFormClose}
+        job={editingJob}
+        onSuccess={handleJobFormSuccess}
       />
     </div>
   );

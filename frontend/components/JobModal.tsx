@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, MapPin, Clock, Building, ExternalLink, Share2, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useTheme } from '../contexts/ThemeContext';
-import type { Job } from '~backend/jobs/types';
+import JobSharing from './JobSharing';
+import type { Job } from '../lib/apiClient';
 
 interface JobModalProps {
   job: Job;
@@ -14,6 +15,7 @@ interface JobModalProps {
 
 export default function JobModal({ job, isOpen, onClose }: JobModalProps) {
   const { theme } = useTheme();
+  const [showSharing, setShowSharing] = useState(false);
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -24,23 +26,11 @@ export default function JobModal({ job, isOpen, onClose }: JobModalProps) {
   };
 
   const handleApply = () => {
-    window.open(job.source_url, '_blank');
+    window.open(job.url, '_blank');
   };
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: job.title,
-          text: `Check out this job at ${job.company}`,
-          url: window.location.href,
-        });
-      } catch (err) {
-        console.log('Error sharing:', err);
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-    }
+  const handleShare = () => {
+    setShowSharing(true);
   };
 
   return (
@@ -108,13 +98,13 @@ export default function JobModal({ job, isOpen, onClose }: JobModalProps) {
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
               }`} />
               <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-                Posted {formatDate(job.posted_date || job.created_at)}
+                Posted {formatDate(job.postedDate || job.createdAt)}
               </span>
             </div>
             <span className={`text-xs ${
               theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
             }`}>
-              via {job.source_name}
+              via {job.source}
             </span>
           </div>
 
@@ -129,22 +119,22 @@ export default function JobModal({ job, isOpen, onClose }: JobModalProps) {
                 {job.category}
               </Badge>
             )}
-            {job.job_type && (
+            {job.jobType && (
               <Badge variant="outline" className={`${
                 theme === 'dark' 
                   ? 'border-gray-600 text-gray-300' 
                   : 'border-gray-300 text-gray-600'
               }`}>
-                {job.job_type}
+                {job.jobType}
               </Badge>
             )}
-            {job.salary_range && (
+            {job.salaryRange && (
               <Badge variant="outline" className={`${
                 theme === 'dark' 
                   ? 'border-green-600 text-green-300' 
                   : 'border-green-300 text-green-600'
               }`}>
-                {job.salary_range}
+                {job.salaryRange}
               </Badge>
             )}
           </div>
@@ -205,6 +195,13 @@ export default function JobModal({ job, isOpen, onClose }: JobModalProps) {
           </div>
         </div>
       </DialogContent>
+
+      {/* Job Sharing Modal */}
+      <JobSharing
+        job={job}
+        isOpen={showSharing}
+        onClose={() => setShowSharing(false)}
+      />
     </Dialog>
   );
 }
