@@ -138,7 +138,7 @@ class ApiClient {
   private baseURL: string;
   private token: string | null = null;
 
-  constructor(baseURL: string = 'http://localhost:4000/api') {
+  constructor(baseURL: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api') {
     this.baseURL = baseURL;
     // Get token from localStorage if available
     this.token = localStorage.getItem('auth_token');

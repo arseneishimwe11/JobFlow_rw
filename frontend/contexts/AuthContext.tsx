@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authApi } from '../lib/api';
+import apiClient from '../lib/apiClient';
 
 export interface User {
   id: number;
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await authApi.login({ email, password }) as any;
+      const response = await apiClient.auth.login({ email, password }) as any;
       const userData: User = {
         ...response.user,
         role: response.user.role.toLowerCase() as 'admin' | 'user',

@@ -222,19 +222,6 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="text-center pt-4">
-              <p className={`text-sm ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Don't have an account?{' '}
-                <Link 
-                  to="/register" 
-                  className="text-blue-500 hover:text-blue-600 font-medium"
-                >
-                  Sign up
-                </Link>
-              </p>
-            </div>
           </CardContent>
         </Card>
 

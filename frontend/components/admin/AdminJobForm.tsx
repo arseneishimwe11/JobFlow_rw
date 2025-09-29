@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Alert, AlertDescription } from '../ui/alert';
 import { Loader2, Save, X, AlertCircle } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { jobApi } from '../../lib/api';
+import apiClient from '../../lib/apiClient';
 import type { Job } from '../../lib/apiClient';
 
 interface AdminJobFormProps {
@@ -91,7 +91,7 @@ export default function AdminJobForm({ open, onOpenChange, job, onSuccess }: Adm
 
   const createJobMutation = useMutation({
     mutationFn: (jobData: JobFormData) => 
-      isEditing ? jobApi.update(job.id, jobData) : jobApi.create(jobData),
+      isEditing ? apiClient.jobs.update(job.id, jobData) : apiClient.jobs.create(jobData),
     onSuccess: () => {
       setSuccessMessage(isEditing ? 'Job updated successfully!' : 'Job posted successfully!');
       setErrorMessage('');

@@ -1,7 +1,7 @@
 import type { Job } from './apiClient';
 
 export interface ShareOptions {
-  platform: 'whatsapp' | 'linkedin' | 'twitter' | 'facebook' | 'download';
+  platform: 'whatsapp' | 'linkedin' | 'twitter' | 'facebook' | 'download' | 'copy';
   format: 'square' | 'landscape' | 'story';
   includeLogo?: boolean;
 }
@@ -73,6 +73,9 @@ export class JobSharingService {
         const imageDataUrl = await this.generateJobImage(job, options);
         this.downloadImage(imageDataUrl, `${job.title.replace(/[^a-zA-Z0-9]/g, '_')}_job_posting.png`);
         break;
+      case 'copy':
+        await this.copyToClipboard(shareText + ' ' + shareUrl);
+        break;
     }
   }
 
@@ -139,60 +142,107 @@ export class JobSharingService {
     const padding = 60;
     const contentWidth = width - (padding * 2);
     
-    // Add logo/brand
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 32px Arial, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('Akazi Rwanda', padding, 80);
+    // Add decorative elements
+    this.addDecorations(ctx, width, height);
     
-    // Add job title
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 48px Arial, sans-serif';
-    ctx.textAlign = 'left';
-    
-    const titleLines = this.wrapText(ctx, job.title, contentWidth, 48);
-    titleLines.forEach((line, index) => {
-      ctx.fillText(line, padding, 160 + (index * 60));
-    });
-    
-    // Add company and location
-    ctx.fillStyle = '#e0f2fe';
-    ctx.font = '32px Arial, sans-serif';
-    ctx.fillText(`${job.company} • ${job.location}`, padding, 280);
-    
-    // Add job type and category
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '28px Arial, sans-serif';
-    
-    const jobInfo = `${job.jobType} • ${job.category}`;
-    if (job.salaryRange) {
-      ctx.fillText(`${jobInfo} • ${job.salaryRange}`, padding, 340);
-    } else {
-      ctx.fillText(jobInfo, padding, 340);
-    }
-    
-    // Add description preview
-    if (job.description) {
-      ctx.fillStyle = '#f0f9ff';
-      ctx.font = '24px Arial, sans-serif';
-      
-      const description = job.description.substring(0, 200) + '...';
-      const descLines = this.wrapText(ctx, description, contentWidth, 24);
-      descLines.forEach((line, index) => {
-        ctx.fillText(line, padding, 420 + (index * 35));
-      });
-    }
-    
-    // Add call to action
+    // Add logo/brand with better styling
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 36px Arial, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('🇷🇼 Akazi Rwanda', padding, 80);
+    
+    // Add "NEW JOB" badge
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(padding, 100, 180, 40);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 18px Arial, sans-serif';
+    ctx.fillText('NEW JOB OPPORTUNITY', padding + 10, 125);
+    
+    // Add job title with enhanced styling
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 42px Arial, sans-serif';
+    ctx.textAlign = 'left';
+    
+    const titleLines = this.wrapText(ctx, job.title, contentWidth, 42);
+    let currentY = 180;
+    titleLines.forEach((line, index) => {
+      ctx.fillText(line, padding, currentY + (index * 55));
+    });
+    currentY += titleLines.length * 55 + 20;
+    
+    // Add company info with icons
+    ctx.fillStyle = '#e0f2fe';
+    ctx.font = 'bold 30px Arial, sans-serif';
+    ctx.fillText(`🏢 ${job.company}`, padding, currentY);
+    currentY += 45;
+    
+    ctx.fillText(`📍 ${job.location}`, padding, currentY);
+    currentY += 45;
+    
+    // Add job details with styling
+    ctx.fillStyle = '#a7f3d0';
+    ctx.font = '26px Arial, sans-serif';
+    
+    const jobInfo = `💼 ${job.jobType} • 🏷️ ${job.category}`;
+    ctx.fillText(jobInfo, padding, currentY);
+    currentY += 40;
+    
+    if (job.salaryRange) {
+      ctx.fillText(`💰 ${job.salaryRange}`, padding, currentY);
+      currentY += 40;
+    }
+    
+    // Add description preview with better formatting
+    if (job.description && options.format !== 'square') {
+      ctx.fillStyle = '#f0f9ff';
+      ctx.font = '22px Arial, sans-serif';
+      
+      const description = job.description.substring(0, 150) + '...';
+      const descLines = this.wrapText(ctx, description, contentWidth, 22);
+      descLines.slice(0, 3).forEach((line, index) => {
+        ctx.fillText(line, padding, currentY + (index * 32));
+      });
+      currentY += descLines.slice(0, 3).length * 32 + 30;
+    }
+    
+    // Add call to action with button styling
+    const buttonY = height - 120;
+    const buttonWidth = 400;
+    const buttonX = (width - buttonWidth) / 2;
+    
+    // Button background
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(buttonX, buttonY - 30, buttonWidth, 60);
+    
+    // Button text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 28px Arial, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Apply Now at Akazi Rwanda', width / 2, height - 100);
+    ctx.fillText('🚀 APPLY NOW', width / 2, buttonY + 5);
     
     // Add website URL
     ctx.fillStyle = '#e0f2fe';
-    ctx.font = '24px Arial, sans-serif';
-    ctx.fillText('akazi.rw', width / 2, height - 50);
+    ctx.font = '20px Arial, sans-serif';
+    ctx.fillText('Visit akazi.rw for more jobs', width / 2, height - 30);
+  }
+
+  private addDecorations(ctx: CanvasRenderingContext2D, width: number, height: number): void {
+    // Add subtle geometric decorations
+    ctx.save();
+    ctx.globalAlpha = 0.1;
+    
+    // Top right decoration
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(width - 100, 100, 80, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Bottom left decoration
+    ctx.beginPath();
+    ctx.arc(100, height - 100, 60, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
   }
 
   private wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, fontSize: number): string[] {
@@ -224,6 +274,21 @@ export class JobSharingService {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  private async copyToClipboard(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
   }
 }
 

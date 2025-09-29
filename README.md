@@ -9,14 +9,22 @@ A modern, full-stack job posting platform built with React, Node.js, Express, Ty
 - **Advanced Filtering**: Filter by location, category, job type, salary range, and more
 - **Save Jobs**: Bookmark interesting positions for later
 - **Company Profiles**: Explore company information and all their job listings
+- **Job Sharing**: Generate and share professional job cards on social media
 - **Responsive Design**: Perfect experience on desktop and mobile
 
 ### For Admins
-- **Job Management**: Create, edit, and delete job postings
-- **Bulk Operations**: Add multiple jobs at once
-- **Analytics Dashboard**: View platform statistics and insights
+- **Job Management**: Complete CRUD operations for job postings
+- **Bulk Operations**: Upload multiple jobs via JSON with validation
+- **Analytics Dashboard**: Real-time platform statistics and insights
 - **User Management**: Monitor user activity and engagement
 - **Company Management**: Manage company profiles and information
+
+### Universal Job Sharing System
+- **Image Generation**: Create professional job cards in multiple formats
+- **Social Media Integration**: Direct sharing to WhatsApp, LinkedIn, Twitter, Facebook
+- **Multiple Formats**: Square (1080x1080), Landscape (1200x630), Story (1080x1920)
+- **Copy Link**: Quick link copying for easy sharing
+- **Download**: Save generated images for offline use
 
 ### Technical Features
 - **Modern UI**: Built with React 19, TypeScript, and Tailwind CSS

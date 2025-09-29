@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import AdminJobForm from '../components/admin/AdminJobForm';
+import BulkJobUpload from '../components/admin/BulkJobUpload';
 import { 
   Users, 
   Briefcase, 
@@ -20,7 +21,8 @@ import {
   Star,
   Calendar,
   MapPin,
-  DollarSign
+  DollarSign,
+  Upload
 } from 'lucide-react';
 import { apiClient } from '../lib/apiClient';
 import type { DashboardStatsResponse, JobsListResponse, Job } from '../lib/apiClient';
@@ -29,6 +31,7 @@ export default function AdminDashboard() {
   const { user, isAdmin } = useAuth();
   const { theme } = useTheme();
   const [showJobForm, setShowJobForm] = useState(false);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
 
   // Redirect if not admin
@@ -123,13 +126,27 @@ export default function AdminDashboard() {
               Welcome back, {user?.name}
             </p>
           </div>
-          <Button
-            onClick={() => setShowJobForm(true)}
-            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Post New Job
-          </Button>
+          <div className="flex space-x-3">
+            <Button
+              onClick={() => setShowBulkUpload(true)}
+              variant="outline"
+              className={`${
+                theme === 'dark'
+                  ? 'border-white/20 text-gray-300 hover:bg-white/10'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Bulk Upload
+            </Button>
+            <Button
+              onClick={() => setShowJobForm(true)}
+              className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Post New Job
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -346,6 +363,13 @@ export default function AdminDashboard() {
         open={showJobForm} 
         onOpenChange={handleJobFormClose}
         job={editingJob}
+        onSuccess={handleJobFormSuccess}
+      />
+
+      {/* Bulk Upload Modal */}
+      <BulkJobUpload
+        open={showBulkUpload}
+        onOpenChange={setShowBulkUpload}
         onSuccess={handleJobFormSuccess}
       />
     </div>

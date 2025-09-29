@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Moon, Sun, Briefcase, Home, Building, Heart, Menu, X, Shield, GraduationCap } from 'lucide-react';
+import { Moon, Sun, Briefcase, Home, Building, Heart, Menu, X, Shield, GraduationCap, Plus, User, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from '../contexts/ThemeContext';
-// import { useAuth } from '../contexts/AuthContext'; // Will be enabled later
-// import AdminJobForm from './admin/AdminJobForm'; // Will be enabled later
+import { useAuth } from '../contexts/AuthContext';
+import AdminJobForm from './admin/AdminJobForm';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showJobForm, setShowJobForm] = useState(false);
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
@@ -128,14 +130,51 @@ export default function Header() {
                 )}
               </Button>
 
-              {/* Sign In Button */}
-              <Button
-                onClick={() => navigate('/login')}
-                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-              >
-                <Shield className="w-4 h-4 mr-2" />
-                Sign In
-              </Button>
+              {/* Authentication Section */}
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-2">
+                  {isAdmin && (
+                    <Button
+                      onClick={() => setShowJobForm(true)}
+                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-300"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Post Job
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => navigate('/admin')}
+                    variant="outline"
+                    className={`rounded-xl ${
+                      theme === 'dark'
+                        ? 'border-white/20 text-gray-300 hover:bg-white/10'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    {user?.name || 'Profile'}
+                  </Button>
+                  <Button
+                    onClick={logout}
+                    variant="outline"
+                    className={`rounded-xl ${
+                      theme === 'dark'
+                        ? 'border-red-600/50 text-red-400 hover:bg-red-900/20'
+                        : 'border-red-300 text-red-600 hover:bg-red-50'
+                    }`}
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => navigate('/login')}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Sign In
+                </Button>
+              )}
 
               {/* Mobile Menu Button */}
               <Button
@@ -216,69 +255,91 @@ export default function Header() {
                 })}
               </div>
 
-              {/* Mobile CTA */}
-              <Button className={`w-full mb-4 h-11 rounded-xl font-medium ${
-                theme === 'dark'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700'
-                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
-              } text-white shadow-lg`}>
-                <Plus className="w-4 h-4 mr-2" />
-                Post a Job
-              </Button>
+              {/* Mobile Authentication Section */}
+              {isAuthenticated ? (
+                <>
+                  {/* Mobile CTA for Admins */}
+                  {isAdmin && (
+                    <Button 
+                      onClick={() => setShowJobForm(true)}
+                      className={`w-full mb-4 h-11 rounded-xl font-medium ${
+                        theme === 'dark'
+                          ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700'
+                          : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
+                      } text-white shadow-lg`}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Post a Job
+                    </Button>
+                  )}
 
-              {/* Mobile User Section */}
-              <div className={`pt-4 border-t ${
-                theme === 'dark' ? 'border-gray-700/50' : 'border-gray-200'
-              }`}>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    theme === 'dark' 
-                      ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
-                      : 'bg-gradient-to-br from-blue-500 to-cyan-600'
+                  {/* Mobile User Section */}
+                  <div className={`pt-4 border-t ${
+                    theme === 'dark' ? 'border-gray-700/50' : 'border-gray-200'
                   }`}>
-                    <User className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className={`font-medium truncate ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      John Doe
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        theme === 'dark' 
+                          ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
+                          : 'bg-gradient-to-br from-blue-500 to-cyan-600'
+                      }`}>
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className={`font-medium truncate ${
+                          theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        }`}>
+                          {user?.name || 'User'}
+                        </div>
+                        <div className={`text-sm truncate ${
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
+                          {user?.role === 'admin' ? 'Administrator' : 'Job Seeker'}
+                        </div>
+                      </div>
                     </div>
-                    <div className={`text-sm truncate ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      Software Engineer
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        onClick={() => navigate('/admin')}
+                        variant="outline"
+                        size="sm"
+                        className={`rounded-lg ${
+                          theme === 'dark' 
+                            ? 'border-gray-700/50 text-gray-300 hover:text-white hover:bg-white/10' 
+                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <Settings className="w-4 h-4 mr-1" />
+                        <span className="text-xs">Profile</span>
+                      </Button>
+                      <Button
+                        onClick={logout}
+                        variant="outline"
+                        size="sm"
+                        className={`rounded-lg ${
+                          theme === 'dark'
+                            ? 'text-red-400 hover:text-red-300 border-red-900/50 hover:bg-red-900/20'
+                            : 'text-red-600 border-red-300 hover:bg-red-50'
+                        }`}
+                      >
+                        <LogOut className="w-4 h-4 mr-1" />
+                        <span className="text-xs">Sign out</span>
+                      </Button>
                     </div>
                   </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={`rounded-lg ${
-                      theme === 'dark' 
-                        ? 'border-gray-700/50 text-gray-300 hover:text-white hover:bg-white/10' 
-                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Settings className="w-4 h-4 mr-1" />
-                    <span className="text-xs">Settings</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={`rounded-lg ${
-                      theme === 'dark'
-                        ? 'text-red-400 hover:text-red-300 border-red-900/50 hover:bg-red-900/20'
-                        : 'text-red-600 border-red-300 hover:bg-red-50'
-                    }`}
-                  >
-                    <LogOut className="w-4 h-4 mr-1" />
-                    <span className="text-xs">Sign out</span>
-                  </Button>
-                </div>
-              </div>
+                </>
+              ) : (
+                <Button 
+                  onClick={() => navigate('/login')}
+                  className={`w-full mb-4 h-11 rounded-xl font-medium ${
+                    theme === 'dark'
+                      ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
+                      : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'
+                  } text-white shadow-lg`}>
+                  <Shield className="w-4 h-4 mr-2" />
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -286,6 +347,18 @@ export default function Header() {
 
       {/* Spacer for fixed header */}
       <div className="h-16" />
+
+      {/* Admin Job Form Modal */}
+      {isAdmin && (
+        <AdminJobForm 
+          open={showJobForm} 
+          onOpenChange={setShowJobForm}
+          onSuccess={() => {
+            setShowJobForm(false);
+            // Optionally refresh data or show success message
+          }}
+        />
+      )}
     </>
   );
 }

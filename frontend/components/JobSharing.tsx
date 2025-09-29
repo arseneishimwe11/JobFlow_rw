@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Share2, Download, MessageCircle, Linkedin, Twitter, Facebook, X } from 'lucide-react';
+import { Share2, Download, MessageCircle, Linkedin, Twitter, Facebook, X, Copy, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -55,6 +55,12 @@ export default function JobSharing({ job, isOpen, onClose }: JobSharingProps) {
       label: 'Download',
       icon: Download,
       color: 'text-purple-600'
+    },
+    {
+      platform: 'copy',
+      label: 'Copy Link',
+      icon: Copy,
+      color: 'text-gray-600'
     }
   ];
 
@@ -152,7 +158,7 @@ export default function JobSharing({ job, isOpen, onClose }: JobSharingProps) {
             }`}>
               Image Format
             </label>
-            <Select value={selectedFormat} onValueChange={(value: ShareOptions['format']) => setSelectedFormat(value)}>
+            <Select value={selectedFormat} onValueChange={(value) => setSelectedFormat(value as ShareOptions['format'])}>
               <SelectTrigger className={`${
                 theme === 'dark' 
                   ? 'bg-white/10 border-white/20 text-white' 
