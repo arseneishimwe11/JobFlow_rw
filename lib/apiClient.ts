@@ -163,17 +163,9 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    // Build URL correctly - don't duplicate /api
-    let url = this.baseURL;
-    
-    // If baseURL doesn't end with /api, add it
-    if (!url.endsWith('/api')) {
-      url += '/api';
-    }
-    
-    // Ensure endpoint starts with /
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    url += cleanEndpoint;
+    // Ensure endpoint starts with /api/ and doesn't duplicate it
+    const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
+    const url = `${this.baseURL}${apiEndpoint}`;
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -194,7 +186,7 @@ class ApiClient {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.message || `Route ${endpoint} not found`;
+        const errorMessage = errorData.message || `Route ${apiEndpoint} not found`;
         throw new Error(errorMessage);
       }
 
