@@ -1,13 +1,13 @@
 import type { Job } from './apiClient';
 
 export interface ShareOptions {
-  platform: 'whatsapp' | 'linkedin' | 'twitter' | 'facebook' | 'download' | 'copy';
-  format: 'square' | 'landscape' | 'story';
-  includeLogo?: boolean;
+  platform: 'whatsapp' | 'linkedin' | 'twitter' | 'facebook' | 'email' | 'copy';
 }
 
 export class JobSharingService {
   private static instance: JobSharingService;
+  private baseUrl: string = window.location.origin;
+  private siteUrl: string = 'opendoors.rw'; // Your production URL
   
   public static getInstance(): JobSharingService {
     if (!JobSharingService.instance) {
@@ -17,240 +17,356 @@ export class JobSharingService {
   }
 
   /**
-   * Generate a shareable image for a job posting
+   * Share a job to various platforms
    */
-  async generateJobImage(job: Job, options: ShareOptions): Promise<string> {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (!ctx) {
-      throw new Error('Could not get canvas context');
+  async shareJob(job: Job, options: ShareOptions, imageDataUrl?: string): Promise<void> {
+    const text = this.getFormattedShareText(job, options.platform);
+    const url = this.getShareUrl(job);
+
+    switch (options.platform) {
+      case 'whatsapp':
+        // Try to use Web Share API with image if available
+        if (navigator.share && imageDataUrl) {
+          try {
+            // Convert data URL to blob
+            const blob = await this.dataUrlToBlob(imageDataUrl);
+            const file = new File([blob], `${job.title.replace(/[^a-zA-Z0-9]/g, '_')}.png`, { type: 'image/png' });
+            
+            await navigator.share({
+              text: text,
+              files: [file]
+            });
+            return;
+          } catch (error) {
+            console.log('Web Share API not available, falling back to text only');
+          }
+        }
+        // Fallback to text only
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        break;
+      
+      case 'linkedin':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      
+      case 'twitter':
+        const twitterText = this.getTwitterText(job);
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}`, '_blank');
+        break;
+      
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
+      
+      case 'email':
+        const emailText = this.getEmailText(job);
+        const subject = `Job Opportunity: ${job.title}`;
+        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailText)}`;
+        break;
+      
+      case 'copy':
+        await this.copyToClipboard(text);
+        break;
     }
-
-    // Set canvas dimensions based on format
-    const dimensions = this.getDimensions(options.format);
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
-
-    // Create gradient background
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#1e40af'); // blue-800
-    gradient.addColorStop(1, '#0891b2'); // cyan-600
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Add subtle pattern overlay
-    this.addPatternOverlay(ctx, canvas.width, canvas.height);
-
-    // Add content
-    await this.addJobContent(ctx, job, canvas.width, canvas.height, options);
-
-    return canvas.toDataURL('image/png', 1.0);
   }
 
   /**
-   * Share job to specific platform
+   * Convert data URL to Blob
    */
-  async shareJob(job: Job, options: ShareOptions): Promise<void> {
-    const shareUrl = this.getShareUrl(job, options);
-    const shareText = this.getShareText(job, options);
-    
-    switch (options.platform) {
-      case 'whatsapp':
-        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
-        break;
-      case 'linkedin':
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
-        break;
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-        break;
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-        break;
-      case 'download':
-        const imageDataUrl = await this.generateJobImage(job, options);
-        this.downloadImage(imageDataUrl, `${job.title.replace(/[^a-zA-Z0-9]/g, '_')}_job_posting.png`);
-        break;
-      case 'copy':
-        await this.copyToClipboard(shareText + ' ' + shareUrl);
-        break;
-    }
+  private async dataUrlToBlob(dataUrl: string): Promise<Blob> {
+    const response = await fetch(dataUrl);
+    return await response.blob();
   }
 
   /**
    * Get shareable URL for job
    */
-  getShareUrl(job: Job, options: ShareOptions): string {
-    const baseUrl = window.location.origin;
-    return `${baseUrl}/jobs/${job.id}`;
+  getShareUrl(job: Job): string {
+    return `${this.baseUrl}/jobs/${job.id}`;
   }
 
   /**
-   * Get share text for job
+   * Get formatted share text based on platform (WhatsApp style with full details)
    */
-  getShareText(job: Job, options: ShareOptions): string {
-    return `🚀 New Job Opportunity!\n\n${job.title} at ${job.company}\n📍 ${job.location}\n\nCheck it out:`;
+  private getFormattedShareText(job: Job, platform: string): string {
+    const jobUrl = this.getShareUrl(job);
+    const siteUrl = this.siteUrl;
+    
+    // Format deadline if available
+    const deadlineText = job.deadline 
+      ? `\nDeadline: ${new Date(job.deadline).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+      : '';
+    
+    // Create the message with all details and emojis
+    return `🚀 *Open Position*
+
+*${job.title}*${deadlineText}
+
+${job.company} is hiring!
+
+📍 Location: ${job.location}
+💼 Type: ${job.jobType || 'Full-time'}
+🏷️ Category: ${job.category || 'General'}
+${job.salaryRange ? `💰 Salary: ${job.salaryRange}` : ''}
+
+Visit our opportunity platform to apply:
+${jobUrl}
+
+Follow our platform: ${this.baseUrl}
+
+_Apply now or share with someone who might be a perfect fit._`;
   }
 
-  private getDimensions(format: ShareOptions['format']): { width: number; height: number } {
-    switch (format) {
-      case 'square':
-        return { width: 1080, height: 1080 };
-      case 'landscape':
-        return { width: 1200, height: 630 };
-      case 'story':
-        return { width: 1080, height: 1920 };
-      default:
-        return { width: 1200, height: 630 };
-    }
+  /**
+   * Get LinkedIn-optimized text
+   */
+  private getLinkedInText(job: Job): string {
+    return `🎯 New Opportunity Alert!
+
+${job.title} at ${job.company}
+
+Location: ${job.location}
+Type: ${job.jobType || 'Full-time'}
+
+${job.description ? job.description.substring(0, 200) + '...' : ''}
+
+Apply now: ${this.getShareUrl(job)}
+
+#JobOpportunity #Hiring #${job.category?.replace(/\s/g, '')} #Rwanda`;
   }
 
-  private addPatternOverlay(ctx: CanvasRenderingContext2D, width: number, height: number): void {
-    ctx.save();
-    ctx.globalAlpha = 0.1;
+  /**
+   * Get Twitter-optimized text (character limit considered)
+   */
+  private getTwitterText(job: Job): string {
+    const jobUrl = this.getShareUrl(job);
+    const baseText = `🚀 ${job.title} at ${job.company}
+
+📍 ${job.location}
+💼 ${job.jobType || 'Full-time'}
+
+Apply: ${jobUrl}`;
     
-    // Add subtle grid pattern
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1;
-    
-    for (let x = 0; x < width; x += 40) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
-    
-    for (let y = 0; y < height; y += 40) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-    }
-    
-    ctx.restore();
+    // Twitter has 280 character limit
+    return baseText.length > 270 ? baseText.substring(0, 270) + '...' : baseText;
   }
 
-  private async addJobContent(
-    ctx: CanvasRenderingContext2D, 
-    job: Job, 
-    width: number, 
-    height: number, 
-    options: ShareOptions
-  ): Promise<void> {
-    const padding = 60;
-    const contentWidth = width - (padding * 2);
+  /**
+   * Get Email-optimized text
+   */
+  private getEmailText(job: Job): string {
+    const jobUrl = this.getShareUrl(job);
     
-    // Add decorative elements
-    this.addDecorations(ctx, width, height);
-    
-    // Add logo/brand with better styling
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 36px Arial, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('🇷🇼 Akazi Rwanda', padding, 80);
-    
-    // Add "NEW JOB" badge
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(padding, 100, 180, 40);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 18px Arial, sans-serif';
-    ctx.fillText('NEW JOB OPPORTUNITY', padding + 10, 125);
-    
-    // Add job title with enhanced styling
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 42px Arial, sans-serif';
-    ctx.textAlign = 'left';
-    
-    const titleLines = this.wrapText(ctx, job.title, contentWidth, 42);
-    let currentY = 180;
-    titleLines.forEach((line, index) => {
-      ctx.fillText(line, padding, currentY + (index * 55));
-    });
-    currentY += titleLines.length * 55 + 20;
-    
-    // Add company info with icons
-    ctx.fillStyle = '#e0f2fe';
-    ctx.font = 'bold 30px Arial, sans-serif';
-    ctx.fillText(`🏢 ${job.company}`, padding, currentY);
-    currentY += 45;
-    
-    ctx.fillText(`📍 ${job.location}`, padding, currentY);
-    currentY += 45;
-    
-    // Add job details with styling
-    ctx.fillStyle = '#a7f3d0';
-    ctx.font = '26px Arial, sans-serif';
-    
-    const jobInfo = `💼 ${job.jobType} • 🏷️ ${job.category}`;
-    ctx.fillText(jobInfo, padding, currentY);
-    currentY += 40;
-    
-    if (job.salaryRange) {
-      ctx.fillText(`💰 ${job.salaryRange}`, padding, currentY);
-      currentY += 40;
-    }
-    
-    // Add description preview with better formatting
-    if (job.description && options.format !== 'square') {
-      ctx.fillStyle = '#f0f9ff';
-      ctx.font = '22px Arial, sans-serif';
+    return `Hi,
+
+I wanted to share this job opportunity with you:
+
+Job Title: ${job.title}
+Company: ${job.company}
+Location: ${job.location}
+Type: ${job.jobType || 'Full-time'}
+Category: ${job.category || 'General'}
+${job.salaryRange ? `Salary Range: ${job.salaryRange}` : ''}
+${job.deadline ? `Application Deadline: ${new Date(job.deadline).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}` : ''}
+
+${job.description || ''}
+
+To apply or learn more, visit:
+${jobUrl}
+
+Explore more opportunities at ${this.siteUrl}
+
+Best regards`;
+  }
+
+  /**
+   * Copy text to clipboard
+   */
+  private async copyToClipboard(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
       
-      const description = job.description.substring(0, 150) + '...';
-      const descLines = this.wrapText(ctx, description, contentWidth, 22);
-      descLines.slice(0, 3).forEach((line, index) => {
-        ctx.fillText(line, padding, currentY + (index * 32));
-      });
-      currentY += descLines.slice(0, 3).length * 32 + 30;
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Failed to copy text', err);
+      }
+      
+      document.body.removeChild(textArea);
     }
-    
-    // Add call to action with button styling
-    const buttonY = height - 120;
-    const buttonWidth = 400;
-    const buttonX = (width - buttonWidth) / 2;
-    
-    // Button background
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(buttonX, buttonY - 30, buttonWidth, 60);
-    
-    // Button text
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 28px Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('🚀 APPLY NOW', width / 2, buttonY + 5);
-    
-    // Add website URL
-    ctx.fillStyle = '#e0f2fe';
-    ctx.font = '20px Arial, sans-serif';
-    ctx.fillText('Visit akazi.rw for more jobs', width / 2, height - 30);
   }
 
-  private addDecorations(ctx: CanvasRenderingContext2D, width: number, height: number): void {
-    // Add subtle geometric decorations
-    ctx.save();
-    ctx.globalAlpha = 0.1;
-    
-    // Top right decoration
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(width - 100, 100, 80, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Bottom left decoration
-    ctx.beginPath();
-    ctx.arc(100, height - 100, 60, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.restore();
+  /**
+   * Get preview text for display
+   */
+  getPreviewText(job: Job): string {
+    return this.getFormattedShareText(job, 'whatsapp');
   }
 
+  /**
+   * Generate a professional job card image with SVG background
+   */
+  async generateJobImage(job: Job): Promise<string> {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) {
+        throw new Error('Could not get canvas context');
+      }
+
+      // WhatsApp preview dimensions (16:9 ratio)
+      canvas.width = 1024;
+      canvas.height = 576;
+
+      const renderContent = () => {
+        // Add dark overlay for text readability (if SVG loaded)
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Render text content
+        const centerY = canvas.height / 2;
+        
+        // "Open Position" text at top
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '22px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Open Position', canvas.width / 2, 80);
+
+        // Job Title (main text)
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 48px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        const titleLines = this.wrapText(ctx, job.title, canvas.width - 120, 48);
+        const titleY = centerY - 80;
+        titleLines.slice(0, 2).forEach((line, index) => {
+          ctx.fillText(line, canvas.width / 2, titleY + (index * 56));
+        });
+
+        // Company and Job Info
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.font = '20px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        
+        let currentY = centerY + 10;
+        
+        // Company
+        ctx.fillText(`${job.company}`, canvas.width / 2, currentY);
+        currentY += 35;
+        
+        // Location & Type on same line
+        const locationAndType = `${job.location || ''} ${job.location && job.jobType ? '•' : ''} ${job.jobType || ''}`.trim();
+        if (locationAndType) {
+          ctx.font = '18px system-ui, -apple-system, sans-serif';
+          ctx.fillText(locationAndType, canvas.width / 2, currentY);
+          currentY += 30;
+        }
+
+        // Deadline badge (green, centered)
+        if (job.deadline) {
+          const deadlineDate = new Date(job.deadline).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+          const deadlineText = `Deadline: ${deadlineDate}`;
+          
+          ctx.font = '18px system-ui, -apple-system, sans-serif';
+          const deadlineWidth = ctx.measureText(deadlineText).width + 50;
+          
+          // Green rounded rectangle
+          const rectX = (canvas.width - deadlineWidth) / 2;
+          const rectY = currentY + 10;
+          const rectHeight = 38;
+          const radius = 19;
+          
+          ctx.fillStyle = '#84cc16';
+          ctx.beginPath();
+          ctx.moveTo(rectX + radius, rectY);
+          ctx.lineTo(rectX + deadlineWidth - radius, rectY);
+          ctx.quadraticCurveTo(rectX + deadlineWidth, rectY, rectX + deadlineWidth, rectY + radius);
+          ctx.lineTo(rectX + deadlineWidth, rectY + rectHeight - radius);
+          ctx.quadraticCurveTo(rectX + deadlineWidth, rectY + rectHeight, rectX + deadlineWidth - radius, rectY + rectHeight);
+          ctx.lineTo(rectX + radius, rectY + rectHeight);
+          ctx.quadraticCurveTo(rectX, rectY + rectHeight, rectX, rectY + rectHeight - radius);
+          ctx.lineTo(rectX, rectY + radius);
+          ctx.quadraticCurveTo(rectX, rectY, rectX + radius, rectY);
+          ctx.closePath();
+          ctx.fill();
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 16px system-ui, -apple-system, sans-serif';
+          ctx.fillText(deadlineText, canvas.width / 2, rectY + 24);
+        }
+
+        // Bottom section - URL
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.font = '16px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Visit our opportunity platform to apply.', canvas.width / 2, canvas.height - 65);
+        
+        ctx.font = 'bold 20px system-ui, -apple-system, sans-serif';
+        ctx.fillText('opendoors.rw', canvas.width / 2, canvas.height - 35);
+
+        resolve(canvas.toDataURL('image/png', 1.0));
+      };
+
+      // Try to load SVG background
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        // Draw the background image
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        renderContent();
+      };
+      
+      img.onerror = () => {
+        console.log('SVG failed to load, using gradient background');
+        // Fallback to gradient background
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, '#0f766e');
+        gradient.addColorStop(1, '#14532d');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        renderContent();
+      };
+      
+      // Try to load the SVG
+      img.src = '/assets/job_offers.svg';
+    });
+  }
+
+  /**
+   * Download generated image
+   */
+  downloadImage(dataUrl: string, filename: string): void {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = dataUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  /**
+   * Wrap text to fit within width
+   */
   private wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, fontSize: number): string[] {
     const words = text.split(' ');
     const lines: string[] = [];
     let currentLine = words[0];
     
-    ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+    ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`;
     
     for (let i = 1; i < words.length; i++) {
       const word = words[i];
@@ -265,30 +381,6 @@ export class JobSharingService {
     lines.push(currentLine);
     
     return lines;
-  }
-
-  private downloadImage(dataUrl: string, filename: string): void {
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = dataUrl;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-
-  private async copyToClipboard(text: string): Promise<void> {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (error) {
-      // Fallback for browsers that don't support clipboard API
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-    }
   }
 }
 

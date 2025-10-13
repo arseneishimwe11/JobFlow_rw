@@ -199,6 +199,24 @@ export default function JobDetailPage() {
               {job.type}
             </Badge>
           )}
+          {(job as any).jobType && (
+            <Badge variant="outline" className={`${
+              theme === 'dark' 
+                ? 'border-purple-600 text-purple-300' 
+                : 'border-purple-300 text-purple-600'
+            }`}>
+              {(job as any).jobType}
+            </Badge>
+          )}
+          {(job as any).category && (
+            <Badge variant="outline" className={`${
+              theme === 'dark' 
+                ? 'border-cyan-600 text-cyan-300' 
+                : 'border-cyan-300 text-cyan-600'
+            }`}>
+              {(job as any).category}
+            </Badge>
+          )}
           {job.salaryRange && (
             <Badge variant="outline" className={`${
               theme === 'dark' 
@@ -217,27 +235,58 @@ export default function JobDetailPage() {
               {job.experience}
             </Badge>
           )}
+          {job.deadline && (
+            <Badge variant="outline" className={`${
+              theme === 'dark' 
+                ? 'border-orange-600 text-orange-300' 
+                : 'border-orange-300 text-orange-600'
+            }`}>
+              Deadline: {job.deadline}
+            </Badge>
+          )}
         </div>
       </div>
 
       <div className="space-y-8">
         {/* Description */}
-        <div className={`p-6 rounded-2xl border ${
-          theme === 'dark' 
-            ? 'bg-white/5 border-white/10' 
-            : 'bg-white/70 border-white/40'
-        } backdrop-blur-xl`}>
-          <h2 className={`text-xl font-semibold mb-4 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
-            Job Details
-          </h2>
-          <div className={`prose max-w-none ${
-            theme === 'dark' ? 'prose-invert text-gray-300' : 'text-gray-700'
-          }`}>
-            <p className="whitespace-pre-wrap">No detailed description available for this job posting.</p>
+        {(job as any).description && (
+          <div className={`p-6 rounded-2xl border ${
+            theme === 'dark' 
+              ? 'bg-white/5 border-white/10' 
+              : 'bg-white/70 border-white/40'
+          } backdrop-blur-xl`}>
+            <h2 className={`text-xl font-semibold mb-4 ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
+              Job Description
+            </h2>
+            <div className={`prose max-w-none ${
+              theme === 'dark' ? 'prose-invert text-gray-300' : 'text-gray-700'
+            }`}>
+              <p className="whitespace-pre-wrap">{(job as any).description}</p>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Requirements */}
+        {(job as any).requirements && (
+          <div className={`p-6 rounded-2xl border ${
+            theme === 'dark' 
+              ? 'bg-white/5 border-white/10' 
+              : 'bg-white/70 border-white/40'
+          } backdrop-blur-xl`}>
+            <h2 className={`text-xl font-semibold mb-4 ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
+              Requirements
+            </h2>
+            <div className={`prose max-w-none ${
+              theme === 'dark' ? 'prose-invert text-gray-300' : 'text-gray-700'
+            }`}>
+              <p className="whitespace-pre-wrap">{(job as any).requirements}</p>
+            </div>
+          </div>
+        )}
 
         {/* Apply Section */}
         <div className={`p-6 rounded-2xl border ${

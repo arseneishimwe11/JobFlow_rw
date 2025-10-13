@@ -28,19 +28,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session by calling /api/auth/me
+    // Check if user has a valid token
     const checkAuth = async () => {
       try {
+        const token = apiClient.getToken();
+        if (!token) {
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+
         const response = await apiClient.auth.me() as any;
         if (response.success && response.data) {
           setUser({
             ...response.data,
             role: response.data.role.toLowerCase() as 'admin' | 'user',
           });
+        } else {
+          setUser({
+            ...response,
+            role: response.role.toLowerCase() as 'admin' | 'user',
+          });
         }
       } catch (error) {
         console.error('Authentication check failed:', error);
-        // Not authenticated, user remains null
+        // Clear invalid token
+        apiClient.clearToken();
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -48,13 +61,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     checkAuth();
-    
-    // Set up an interval to refresh the session periodically
-    const refreshInterval = setInterval(checkAuth, 15 * 60 * 1000); // Refresh every 15 minutes
-    
-    return () => {
-      clearInterval(refreshInterval);
-    };
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -66,7 +72,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: response.user.role.toLowerCase() as 'admin' | 'user',
       };
       setUser(userData);
-      // No need to store in localStorage - cookie handles it
     } catch (error) {
       throw error;
     } finally {
@@ -79,7 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await apiClient.auth.logout();
     } catch (error) {
       // Continue with logout even if API call fails
+      console.error('Logout error:', error);
     }
+    apiClient.clearToken();
     setUser(null);
   };
 

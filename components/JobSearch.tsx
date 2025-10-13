@@ -94,7 +94,7 @@ export default function JobSearch() {
             </SelectContent>
           </Select>
 
-          <Select value={filters.job_type || ''} onValueChange={(value) => updateFilter('job_type', value)}>
+          <Select value={filters.jobType || ''} onValueChange={(value) => updateFilter('jobType', value)}>
             <SelectTrigger className={`h-12 rounded-xl border-0 ${
               theme === 'dark' 
                 ? 'bg-white/10 text-white' 
@@ -110,7 +110,7 @@ export default function JobSearch() {
             </SelectContent>
           </Select>
 
-          <Select value={filters.date_range || ''} onValueChange={(value) => updateFilter('date_range', value)}>
+          <Select value={filters.dateRange || ''} onValueChange={(value) => updateFilter('dateRange', value)}>
             <SelectTrigger className={`h-12 rounded-xl border-0 ${
               theme === 'dark' 
                 ? 'bg-white/10 text-white' 

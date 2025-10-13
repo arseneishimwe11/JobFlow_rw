@@ -6,6 +6,7 @@ export interface JobFilters {
   location?: string;
   category?: string;
   jobType?: string;
+  type?: 'Job' | 'Internship';
   source?: string;
   dateRange?: string;
   featured?: boolean;

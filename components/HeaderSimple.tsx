@@ -38,13 +38,13 @@ export default function Header() {
           <div className="flex items-center justify-between h-16">
             {/* Logo Section */}
             <Link to="/" className="flex items-center space-x-3 group flex-shrink-0">
-              <div className={`relative p-2 rounded-xl transition-all duration-300 group-hover:scale-110 ${
-                theme === 'dark' 
-                  ? 'bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 shadow-lg shadow-blue-500/20' 
-                  : 'bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 shadow-lg shadow-blue-500/20'
-              }`}>
-                <Briefcase className="h-6 w-6 text-white" />
-                <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative transition-all duration-300 group-hover:scale-110">
+                <img 
+                  src={theme === 'dark' ? '/assets/logo_white.png' : '/assets/logo.png'} 
+                  alt="OpenDoors Logo" 
+                  className="w-10 h-10 object-contain"
+                />
+                <div className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               <div className="hidden sm:block">
                 <h1 className={`text-xl font-bold bg-gradient-to-r ${
@@ -52,7 +52,7 @@ export default function Header() {
                     ? 'from-white via-blue-100 to-cyan-100' 
                     : 'from-gray-900 via-blue-900 to-cyan-900'
                 } bg-clip-text text-transparent`}>
-                  JobFlow
+                  OpenDoors
                 </h1>
                 <p className={`text-xs ${
                   theme === 'dark' ? 'text-gray-400' : 'text-gray-600'

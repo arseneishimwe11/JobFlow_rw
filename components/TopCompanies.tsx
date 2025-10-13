@@ -131,7 +131,7 @@ export default function TopCompanies() {
                       ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
                       : 'bg-gradient-to-br from-blue-600 to-cyan-600'
                   }`}>
-                    {company.logo || company.name?.substring(0, 2).toUpperCase() || 'CO'}
+                    
                   </div>
                   <div>
                     <h3 className={`font-semibold ${

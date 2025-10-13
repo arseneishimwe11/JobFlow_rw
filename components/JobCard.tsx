@@ -103,31 +103,32 @@ export default function JobCard({ job }: JobCardProps) {
           </Button>
         </div>
 
-        {/* Location and Experience */}
-        <div className="flex items-center justify-between mb-4">
-          {job.location && (
-            <div className="flex items-center space-x-1">
-              <MapPin className={`w-4 h-4 ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-              }`} />
-              <span className={`text-sm ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                {job.location}
-              </span>
-            </div>
-          )}
-          
-          {job.experience && (
+        {/* Location */}
+        {job.location && (
+          <div className="flex items-center space-x-1 mb-3">
+            <MapPin className={`w-4 h-4 ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            }`} />
+            <span className={`text-sm ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              {job.location}
+            </span>
+          </div>
+        )}
+        
+        {/* Experience/Expertise */}
+        {job.experience && (
+          <div className="mb-4">
             <Badge variant="outline" className={`text-xs ${
               theme === 'dark' 
-                ? 'border-gray-600 text-gray-300' 
-                : 'border-gray-300 text-gray-600'
+                ? 'border-blue-600 text-blue-300 bg-blue-900/20' 
+                : 'border-blue-300 text-blue-600 bg-blue-50'
             }`}>
               {job.experience}
             </Badge>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Dates */}
         <div className="flex flex-wrap gap-2 mb-4">

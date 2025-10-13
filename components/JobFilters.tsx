@@ -78,9 +78,9 @@ export default function JobFilters() {
               <div key={type} className="flex items-center space-x-2">
                 <Checkbox
                   id={type}
-                  checked={filters.job_type === type.toLowerCase()}
+                  checked={filters.jobType === type}
                   onCheckedChange={(checked) => 
-                    updateFilter('job_type', checked ? type.toLowerCase() : null)
+                    updateFilter('jobType', checked ? type : null)
                   }
                 />
                 <label
@@ -160,7 +160,7 @@ export default function JobFilters() {
             <Calendar className="w-4 h-4" />
             <span>Date Posted</span>
           </h3>
-          <Select value={filters.date_range || ''} onValueChange={(value) => updateFilter('date_range', value)}>
+          <Select value={filters.dateRange || ''} onValueChange={(value) => updateFilter('dateRange', value)}>
             <SelectTrigger className={`${
               theme === 'dark' 
                 ? 'bg-white/10 border-white/20 text-white' 
@@ -216,9 +216,9 @@ export default function JobFilters() {
               <div key={company} className="flex items-center space-x-2">
                 <Checkbox
                   id={company}
-                  checked={filters.source_name === company}
+                  checked={filters.source === company}
                   onCheckedChange={(checked) => 
-                    updateFilter('source_name', checked ? company : '')
+                    updateFilter('source', checked ? company : '')
                   }
                 />
                 <label

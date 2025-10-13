@@ -26,7 +26,9 @@ export default function JobModal({ job, isOpen, onClose }: JobModalProps) {
   };
 
   const handleApply = () => {
-    window.open(job.url, '_blank');
+    if (job.link) {
+      window.open(job.link, '_blank');
+    }
   };
 
   const handleShare = () => {
@@ -98,14 +100,9 @@ export default function JobModal({ job, isOpen, onClose }: JobModalProps) {
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
               }`} />
               <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-                Posted {formatDate(job.postedDate || job.createdAt)}
+                Posted {formatDate(job.published || job.createdAt)}
               </span>
             </div>
-            <span className={`text-xs ${
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-            }`}>
-              via {job.source}
-            </span>
           </div>
 
           {/* Tags */}

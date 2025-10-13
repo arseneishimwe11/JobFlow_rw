@@ -39,24 +39,24 @@ export default function Header() {
           <div className="flex items-center justify-between h-16">
             {/* Logo Section - Premium & Compact */}
             <Link to="/" className="flex items-center space-x-3 group flex-shrink-0">
-              <div className={`relative p-2 rounded-xl transition-all duration-300 group-hover:scale-110 ${
-                theme === 'dark' 
-                  ? 'bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 shadow-lg shadow-blue-500/20' 
-                  : 'bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 shadow-lg shadow-blue-500/20'
-              }`}>
-                <Briefcase className="w-5 h-5 text-white" />
-                <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative transition-all duration-300 group-hover:scale-110">
+                <img 
+                  src={theme === 'dark' ? '/assets/logo_white.png' : '/assets/logo.png'} 
+                  alt="OpenDoors Logo" 
+                  className="w-10 h-10 object-contain"
+                />
+                <div className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               <div className="hidden sm:block">
                 <h1 className={`text-lg font-bold transition-colors ${
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 }`}>
-                  Open Doors
+                  OpenDoors
                 </h1>
                 <p className={`text-xs font-medium leading-none ${
                   theme === 'dark' ? 'text-blue-300' : 'text-blue-600'
                 }`}>
-                  Premium Job Platform
+                  Rwanda's Job Platform
                 </p>
               </div>
             </Link>

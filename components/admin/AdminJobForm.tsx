@@ -23,10 +23,15 @@ interface JobFormData {
   title: string;
   company: string;
   location: string;
+  description?: string;
+  requirements?: string;
   link?: string;
   published?: string;
   deadline?: string;
   experience?: string;
+  salaryRange?: string;
+  category?: string;
+  jobType?: string;
   type: string;
 }
 
@@ -39,10 +44,15 @@ export default function AdminJobForm({ open, onOpenChange, job, onSuccess }: Adm
     title: '',
     company: '',
     location: '',
+    description: '',
+    requirements: '',
     link: '',
     published: '',
     deadline: '',
     experience: '',
+    salaryRange: '',
+    category: '',
+    jobType: '',
     type: 'Job',
   });
 
@@ -57,10 +67,15 @@ export default function AdminJobForm({ open, onOpenChange, job, onSuccess }: Adm
         title: job.title || '',
         company: job.company || '',
         location: job.location || '',
+        description: (job as any).description || '',
+        requirements: (job as any).requirements || '',
         link: job.link || '',
         published: job.published || '',
         deadline: job.deadline || '',
         experience: job.experience || '',
+        salaryRange: job.salaryRange || '',
+        category: (job as any).category || '',
+        jobType: (job as any).jobType || '',
         type: job.type || 'Job',
       });
     } else {
@@ -68,10 +83,15 @@ export default function AdminJobForm({ open, onOpenChange, job, onSuccess }: Adm
         title: '',
         company: '',
         location: '',
+        description: '',
+        requirements: '',
         link: '',
         published: '',
         deadline: '',
         experience: '',
+        salaryRange: '',
+        category: '',
+        jobType: '',
         type: 'Job',
       });
     }
@@ -115,10 +135,15 @@ export default function AdminJobForm({ open, onOpenChange, job, onSuccess }: Adm
       title: '',
       company: '',
       location: '',
+      description: '',
+      requirements: '',
       link: '',
       published: '',
       deadline: '',
       experience: '',
+      salaryRange: '',
+      category: '',
+      jobType: '',
       type: 'Job',
     });
     setErrors({});
@@ -286,6 +311,59 @@ export default function AdminJobForm({ open, onOpenChange, job, onSuccess }: Adm
               />
             </div>
 
+            {/* Category */}
+            <div className="space-y-2">
+              <Label htmlFor="category" className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                Category
+              </Label>
+              <Select value={formData.category || ''} onValueChange={(value) => handleInputChange('category', value)}>
+                <SelectTrigger className={`rounded-xl border-0 ${
+                  theme === 'dark' 
+                    ? 'bg-white/10 text-white' 
+                    : 'bg-white/80 text-gray-900'
+                }`}>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Technology">Technology</SelectItem>
+                  <SelectItem value="Marketing">Marketing</SelectItem>
+                  <SelectItem value="Finance">Finance</SelectItem>
+                  <SelectItem value="Healthcare">Healthcare</SelectItem>
+                  <SelectItem value="Education">Education</SelectItem>
+                  <SelectItem value="Sales">Sales</SelectItem>
+                  <SelectItem value="Customer Service">Customer Service</SelectItem>
+                  <SelectItem value="Human Resources">Human Resources</SelectItem>
+                  <SelectItem value="Engineering">Engineering</SelectItem>
+                  <SelectItem value="Design">Design</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Job Type (Employment Type) */}
+            <div className="space-y-2">
+              <Label htmlFor="jobType" className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                Employment Type
+              </Label>
+              <Select value={formData.jobType || ''} onValueChange={(value) => handleInputChange('jobType', value)}>
+                <SelectTrigger className={`rounded-xl border-0 ${
+                  theme === 'dark' 
+                    ? 'bg-white/10 text-white' 
+                    : 'bg-white/80 text-gray-900'
+                }`}>
+                  <SelectValue placeholder="Select employment type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Full-time">Full-time</SelectItem>
+                  <SelectItem value="Part-time">Part-time</SelectItem>
+                  <SelectItem value="Contract">Contract</SelectItem>
+                  <SelectItem value="Freelance">Freelance</SelectItem>
+                  <SelectItem value="Remote">Remote</SelectItem>
+                  <SelectItem value="Hybrid">Hybrid</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Experience Level */}
             <div className="space-y-2">
               <Label htmlFor="experience" className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
@@ -304,7 +382,25 @@ export default function AdminJobForm({ open, onOpenChange, job, onSuccess }: Adm
               />
             </div>
 
-            {/* Job Type */}
+            {/* Salary Range */}
+            <div className="space-y-2">
+              <Label htmlFor="salaryRange" className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                Salary Range
+              </Label>
+              <Input
+                id="salaryRange"
+                value={formData.salaryRange}
+                onChange={(e) => handleInputChange('salaryRange', e.target.value)}
+                placeholder="e.g., 500,000 - 800,000 RWF/month"
+                className={`rounded-xl border-0 ${
+                  theme === 'dark' 
+                    ? 'bg-white/10 text-white placeholder:text-gray-400' 
+                    : 'bg-white/80 text-gray-900 placeholder:text-gray-500'
+                }`}
+              />
+            </div>
+
+            {/* Type (Job or Internship) */}
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
                 Type *
@@ -326,6 +422,44 @@ export default function AdminJobForm({ open, onOpenChange, job, onSuccess }: Adm
                 <p className="text-sm text-red-500">{errors.type}</p>
               )}
             </div>
+          </div>
+
+          {/* Description - Full Width */}
+          <div className="space-y-2">
+            <Label htmlFor="description" className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+              Job Description
+            </Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              placeholder="Describe the job role, responsibilities, and what the company is looking for..."
+              rows={6}
+              className={`rounded-xl border-0 ${
+                theme === 'dark' 
+                  ? 'bg-white/10 text-white placeholder:text-gray-400' 
+                  : 'bg-white/80 text-gray-900 placeholder:text-gray-500'
+              }`}
+            />
+          </div>
+
+          {/* Requirements - Full Width */}
+          <div className="space-y-2">
+            <Label htmlFor="requirements" className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+              Requirements
+            </Label>
+            <Textarea
+              id="requirements"
+              value={formData.requirements}
+              onChange={(e) => handleInputChange('requirements', e.target.value)}
+              placeholder="List the required qualifications, skills, and experience..."
+              rows={6}
+              className={`rounded-xl border-0 ${
+                theme === 'dark' 
+                  ? 'bg-white/10 text-white placeholder:text-gray-400' 
+                  : 'bg-white/80 text-gray-900 placeholder:text-gray-500'
+              }`}
+            />
           </div>
 
 

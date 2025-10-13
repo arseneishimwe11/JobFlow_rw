@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { GraduationCap, MapPin, Clock, Building, ExternalLink, Bookmark, BookmarkCheck } from 'lucide-react';
+import { GraduationCap, MapPin, Clock, Building, ExternalLink, Bookmark, BookmarkCheck, Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,11 +15,12 @@ import type { Job } from '../lib/apiClient';
 export default function InternshipsPage() {
   const { theme } = useTheme();
   const { filters, updateFilter, page, setPage } = useJobFilters();
+  const [showFilters, setShowFilters] = React.useState(false);
 
   // Override filters to only show internships
   const internshipFilters = {
     ...filters,
-    jobType: 'Internship'
+    type: 'Internship'
   };
 
   const { data, isLoading, error } = useQuery({
@@ -229,12 +230,36 @@ export default function InternshipsPage() {
         </div>
       </div>
 
+      {/* Mobile Filter Toggle Button */}
+      <div className="md:hidden mb-4">
+        <Button
+          onClick={() => setShowFilters(!showFilters)}
+          className={`w-full h-12 flex items-center justify-center space-x-2 rounded-2xl transition-all duration-300 ${
+            theme === 'dark' 
+              ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg' 
+              : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white shadow-lg'
+          }`}
+        >
+          {showFilters ? (
+            <>
+              <X className="w-5 h-5" />
+              <span className="font-medium">Hide Filters</span>
+            </>
+          ) : (
+            <>
+              <Filter className="w-5 h-5" />
+              <span className="font-medium">Show Filters & Search</span>
+            </>
+          )}
+        </Button>
+      </div>
+
       {/* Search and Filters */}
       <div className={`p-6 rounded-3xl backdrop-blur-xl border shadow-2xl mb-8 ${
         theme === 'dark' 
           ? 'bg-white/5 border-white/10' 
           : 'bg-white/70 border-white/40'
-      }`}>
+      } ${showFilters ? 'block' : 'hidden md:block'}`}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Input
             placeholder="Search internships..."

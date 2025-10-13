@@ -51,7 +51,7 @@ export default function JobCategories() {
                 {category.name}
               </h3>
               
-              <p className={`text-2xl font-bold mb-2 ${
+              {/* <p className={`text-2xl font-bold mb-2 ${
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}>
                 {category.count}
@@ -61,7 +61,7 @@ export default function JobCategories() {
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>
                 open positions
-              </p>
+              </p> */}
 
               <Badge className="bg-green-100 text-green-700 border-green-200 text-xs">
                 {category.growth} growth

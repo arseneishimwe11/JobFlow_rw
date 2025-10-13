@@ -11,11 +11,15 @@ interface Job {
   link?: string; // Original job posting URL
   company: string;
   location: string;
+  description?: string; // Full job description
+  requirements?: string; // Job requirements
   published?: string; // Published date as string
   deadline?: string; // Deadline as string
   experience?: string; // Experience level
   salaryRange?: string; // Salary range
-  type: string; // Job type
+  category?: string; // Job category
+  jobType?: string; // Employment type (Full-time, Part-time, etc.)
+  type: string; // Job or Internship
   createdAt: string;
   isFeatured: boolean;
   isActive: boolean;
@@ -138,17 +142,21 @@ class ApiClient {
   constructor(baseURL: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000') {
     this.baseURL = baseURL;
     // Get token from localStorage if available
-    this.token = localStorage.getItem('auth_token');
+    this.token = localStorage.getItem('jobflow_token');
   }
 
   setToken(token: string) {
     this.token = token;
-    localStorage.setItem('auth_token', token);
+    localStorage.setItem('jobflow_token', token);
   }
 
   clearToken() {
     this.token = null;
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem('jobflow_token');
+  }
+
+  getToken(): string | null {
+    return this.token;
   }
 
   private async request<T>(
@@ -171,7 +179,6 @@ class ApiClient {
     const config: RequestInit = {
       ...options,
       headers,
-      credentials: 'include', // Always include credentials for authentication
     };
 
     try {
@@ -179,7 +186,8 @@ class ApiClient {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        const errorMessage = errorData.message || `Route ${apiEndpoint} not found`;
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -273,7 +281,11 @@ class ApiClient {
         body: JSON.stringify(data),
       });
       
-      // No need to set token - cookies handle it automatically
+      // Store token in localStorage
+      if (response.token) {
+        this.setToken(response.token);
+      }
+      
       return response;
     },
 
@@ -283,6 +295,11 @@ class ApiClient {
         body: JSON.stringify(data),
       });
       
+      // Store token in localStorage
+      if (response.token) {
+        this.setToken(response.token);
+      }
+      
       return response;
     },
 
@@ -290,17 +307,17 @@ class ApiClient {
       return this.request<User>('/auth/me');
     },
 
-    logout: async () => {
-      await this.request('/auth/logout', {
+    logout: async (): Promise<void> => {
+      await this.request<void>('/auth/logout', {
         method: 'POST',
       });
-      this.clearToken(); // Clear any cached tokens
+      this.clearToken();
     },
   };
 
   // Saved Jobs API
   savedJobs = {
-    get: async (params: { userId: number }) => {
+    list: async (params: { userId: number }) => {
       return this.request(`/saved-jobs/${params.userId}`);
     },
 
