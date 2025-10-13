@@ -5,7 +5,8 @@
   "packageManager": "npm@10.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --mode production",
+    "build": "tsc && vite build",
+    "start": "vite preview --host",
     "preview": "vite preview --host",
     "lint": "tsc --noEmit"
   },
