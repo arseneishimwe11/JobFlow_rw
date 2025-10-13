@@ -242,6 +242,10 @@ class ApiClient {
         method: 'DELETE',
       });
     },
+
+    stats: async (): Promise<StatsResponse> => {
+      return this.request<StatsResponse>('/stats');
+    },
   };
 
   // Companies API

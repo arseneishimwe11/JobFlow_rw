@@ -86,6 +86,22 @@ function DialogDescription({ className, ...props }: React.HTMLAttributes<HTMLPar
   );
 }
 
+interface DialogTriggerProps {
+  asChild?: boolean;
+  children: React.ReactNode;
+}
+
+function DialogTrigger({ asChild, children }: DialogTriggerProps) {
+  // When asChild is true, render children as-is
+  // This is used to attach dialog open behavior to custom buttons
+  if (asChild) {
+    return <>{children}</>;
+  }
+  
+  // Otherwise render as a button
+  return <button>{children}</button>;
+}
+
 export {
   Dialog,
   DialogContent,
@@ -93,4 +109,5 @@ export {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 }
