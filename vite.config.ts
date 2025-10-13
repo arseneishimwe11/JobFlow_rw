@@ -17,5 +17,11 @@ export default defineConfig({
   mode: "development",
   build: {
     minify: false,
+  },
+   preview: {
+    allowedHosts: [
+      'opendoorsfrontend-production.up.railway.app',
+      'opendoors.rw',
+    ]
   }
 })
