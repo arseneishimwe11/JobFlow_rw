@@ -9,13 +9,11 @@ export default function TrendingSkills() {
   const { theme } = useTheme();
 
   const skills = [
-    { name: 'React/Next.js', icon: Code, demand: 95, growth: '+28%', jobs: 156 },
+    { name: 'Senior Operations Consultant', icon: Code, demand: 95, growth: '+28%', jobs: 156 },
     { name: 'Data Analysis', icon: BarChart, demand: 88, growth: '+22%', jobs: 134 },
     { name: 'UI/UX Design', icon: Palette, demand: 82, growth: '+18%', jobs: 98 },
     { name: 'Digital Marketing', icon: Globe, demand: 79, growth: '+15%', jobs: 112 },
-    { name: 'Cybersecurity', icon: Shield, demand: 91, growth: '+35%', jobs: 67 },
-    { name: 'Cloud Computing', icon: Database, demand: 86, growth: '+25%', jobs: 89 },
-    { name: 'Mobile Development', icon: Smartphone, demand: 84, growth: '+20%', jobs: 76 },
+    { name: 'Accountant', icon: Database, demand: 86, growth: '+25%', jobs: 89 },
     { name: 'Project Management', icon: TrendingUp, demand: 77, growth: '+12%', jobs: 145 },
   ];
 
@@ -34,7 +32,7 @@ export default function TrendingSkills() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {skills.map((skill, index) => (
           <Card key={index} className={`group hover:scale-105 transition-all duration-300 ${
             theme === 'dark' 

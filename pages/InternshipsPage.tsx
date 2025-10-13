@@ -310,7 +310,7 @@ export default function InternshipsPage() {
         }`}>
           {isLoading ? 'Loading...' : `${data?.pagination?.total || 0} Internships Found`}
         </h2>
-        {data && (
+        {data && data.pagination.totalPages > 0 && (
           <p className={`${
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           }`}>

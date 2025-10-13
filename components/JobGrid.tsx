@@ -55,11 +55,13 @@ export default function JobGrid() {
           }`}>
             {isLoading ? 'Loading...' : `${data?.pagination?.total || 0} Jobs Found`}
           </h2>
-          <p className={`${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            {data?.pagination && `Page ${data.pagination.page} of ${data.pagination.totalPages}`}
-          </p>
+          {data?.pagination && data.pagination.totalPages > 0 && (
+            <p className={`${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Page {data.pagination.page} of {data.pagination.totalPages}
+            </p>
+          )}
         </div>
       </div>
 
