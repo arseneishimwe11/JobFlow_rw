@@ -8,7 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from '../contexts/ThemeContext';
-import { useJobFilters } from '../hooks/useJobFilters';
+import { useJobFilters } from '../contexts/JobFiltersContext';
 import { apiClient } from '../lib/apiClient';
 
 export default function JobFilters() {
@@ -28,16 +28,14 @@ export default function JobFilters() {
   const activeFiltersCount = Object.values(filters).filter(Boolean).length;
 
   return (
-    <Card className={`sticky top-24 ${
-      theme === 'dark' 
-        ? 'bg-white/5 border-white/10' 
+    <Card className={`sticky top-24 ${theme === 'dark'
+        ? 'bg-white/5 border-white/10'
         : 'bg-white/70 border-white/40'
-    } backdrop-blur-xl shadow-lg`}>
+      } backdrop-blur-xl shadow-lg`}>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className={`flex items-center space-x-2 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+          <CardTitle className={`flex items-center space-x-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
             <Filter className="w-5 h-5" />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
@@ -51,11 +49,10 @@ export default function JobFilters() {
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className={`${
-                theme === 'dark' 
-                  ? 'text-gray-400 hover:text-white hover:bg-white/10' 
+              className={`${theme === 'dark'
+                  ? 'text-gray-400 hover:text-white hover:bg-white/10'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
+                }`}
             >
               <X className="w-4 h-4 mr-1" />
               Clear
@@ -66,10 +63,9 @@ export default function JobFilters() {
 
       <CardContent className="space-y-6">
         {/* Job Type */}
-        <div>
-          <h3 className={`font-medium mb-3 flex items-center space-x-2 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+        {/* <div>
+          <h3 className={`font-medium mb-3 flex items-center space-x-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
             <Building className="w-4 h-4" />
             <span>Job Type</span>
           </h3>
@@ -79,25 +75,23 @@ export default function JobFilters() {
                 <Checkbox
                   id={type}
                   checked={filters.jobType === type}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     updateFilter('jobType', checked ? type : null)
                   }
                 />
                 <label
                   htmlFor={type}
-                  className={`text-sm cursor-pointer ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                  }`}
+                  className={`text-sm cursor-pointer ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
                 >
                   {type}
                 </label>
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
-        {/* Category */}
-        <div>
+        {/* <div>
           <h3 className={`font-medium mb-3 ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
@@ -119,13 +113,12 @@ export default function JobFilters() {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
 
         {/* Location */}
         <div>
-          <h3 className={`font-medium mb-3 flex items-center space-x-2 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h3 className={`font-medium mb-3 flex items-center space-x-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
             <MapPin className="w-4 h-4" />
             <span>Location</span>
           </h3>
@@ -135,15 +128,14 @@ export default function JobFilters() {
                 <Checkbox
                   id={location}
                   checked={filters.location === location}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     updateFilter('location', checked ? location : '')
                   }
                 />
                 <label
                   htmlFor={location}
-                  className={`text-sm cursor-pointer ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                  }`}
+                  className={`text-sm cursor-pointer ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
                 >
                   {location}
                 </label>
@@ -153,19 +145,17 @@ export default function JobFilters() {
         </div>
 
         {/* Date Posted */}
-        <div>
-          <h3 className={`font-medium mb-3 flex items-center space-x-2 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+        {/* <div>
+          <h3 className={`font-medium mb-3 flex items-center space-x-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
             <Calendar className="w-4 h-4" />
             <span>Date Posted</span>
           </h3>
           <Select value={filters.dateRange || ''} onValueChange={(value) => updateFilter('dateRange', value)}>
-            <SelectTrigger className={`${
-              theme === 'dark' 
-                ? 'bg-white/10 border-white/20 text-white' 
+            <SelectTrigger className={`${theme === 'dark'
+                ? 'bg-white/10 border-white/20 text-white'
                 : 'bg-white border-gray-300 text-gray-900'
-            }`}>
+              }`}>
               <SelectValue placeholder="Any time" />
             </SelectTrigger>
             <SelectContent>
@@ -175,13 +165,12 @@ export default function JobFilters() {
               <SelectItem value="90">Last 3 months</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
 
         {/* Salary Range */}
         <div>
-          <h3 className={`font-medium mb-3 flex items-center space-x-2 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h3 className={`font-medium mb-3 flex items-center space-x-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
             <DollarSign className="w-4 h-4" />
             <span>Salary Range (RWF)</span>
           </h3>
@@ -206,9 +195,8 @@ export default function JobFilters() {
 
         {/* Company */}
         <div>
-          <h3 className={`font-medium mb-3 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
+          <h3 className={`font-medium mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
             Company
           </h3>
           <div className="space-y-2">
@@ -217,15 +205,14 @@ export default function JobFilters() {
                 <Checkbox
                   id={company}
                   checked={filters.source === company}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     updateFilter('source', checked ? company : '')
                   }
                 />
                 <label
                   htmlFor={company}
-                  className={`text-sm cursor-pointer ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                  }`}
+                  className={`text-sm cursor-pointer ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
                 >
                   {company}
                 </label>
