@@ -131,7 +131,15 @@ export default function TopCompanies() {
                       ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
                       : 'bg-gradient-to-br from-blue-600 to-cyan-600'
                   }`}>
-                    
+                    {company.logo ? (
+                      company.logo.startsWith('http') ? (
+                        <img src={company.logo} alt={company.name} className="w-full h-full object-cover rounded-xl" />
+                      ) : (
+                        <span className="text-lg">{company.logo}</span>
+                      )
+                    ) : (
+                      <Building className="w-6 h-6" />
+                    )}
                   </div>
                   <div>
                     <h3 className={`font-semibold ${

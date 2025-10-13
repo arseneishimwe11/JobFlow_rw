@@ -4,6 +4,8 @@ import { Moon, Sun, Briefcase, Home, Building, GraduationCap, Menu, X, Heart } f
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from '../contexts/ThemeContext';
+import logoLight from '../assets/logo.png';
+import logoDark from '../assets/logo_white.png';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
@@ -41,7 +43,7 @@ export default function Header() {
             <Link to="/" className="flex items-center space-x-3 group flex-shrink-0">
               <div className="relative transition-all duration-300 group-hover:scale-110">
                 <img 
-                  src={theme === 'dark' ? '/assets/logo_white.png' : '/assets/logo.png'} 
+                  src={theme === 'dark' ? logoDark : logoLight} 
                   alt="OpenDoors Logo" 
                   className="w-10 h-10 object-contain"
                 />

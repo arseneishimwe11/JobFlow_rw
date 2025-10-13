@@ -23,6 +23,12 @@ interface Job {
   createdAt: string;
   isFeatured: boolean;
   isActive: boolean;
+  company_info?: {
+    id: number;
+    name: string;
+    logo?: string;
+    website?: string;
+  };
 }
 
 interface Company {

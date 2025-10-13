@@ -69,17 +69,40 @@ export default function JobCard({ job }: JobCardProps) {
       >
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <h3 className={`text-lg font-semibold mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
+          <div className="flex items-start space-x-3 flex-1">
+            {/* Company Logo */}
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+              theme === 'dark' 
+                ? 'bg-gradient-to-br from-blue-600 to-cyan-700' 
+                : 'bg-gradient-to-br from-blue-600 to-cyan-600'
             }`}>
-              {job.title}
-            </h3>
-            <div className="flex items-center space-x-2 mb-2">
-              <Building className={`w-4 h-4 ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-              }`} />
-              <span className={`font-medium ${
+              {job.company_info?.logo ? (
+                job.company_info.logo.startsWith('http') ? (
+                  <img 
+                    src={job.company_info.logo} 
+                    alt={job.company} 
+                    className="w-full h-full object-cover rounded-lg"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                ) : (
+                  <span className="text-white font-bold text-sm">{job.company_info.logo}</span>
+                )
+              ) : (
+                <Building className="w-6 h-6 text-white" />
+              )}
+            </div>
+            
+            {/* Job Info */}
+            <div className="flex-1 min-w-0">
+              <h3 className={`text-lg font-semibold mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {job.title}
+              </h3>
+              <span className={`font-medium text-sm ${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 {job.company}
